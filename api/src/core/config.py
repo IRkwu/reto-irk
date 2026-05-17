@@ -14,8 +14,6 @@ class Settings:
 
     CORS_ORIGINS: str = os.getenv("CORS_ORIGINS")
 
-    CREATURE_IMAGE_BASE_URL: str = os.getenv("CREATURE_IMAGE_BASE_URL")
-
     @property
     def CORS_ORIGINS_LIST(self) -> list[str]:
         if not self.CORS_ORIGINS:

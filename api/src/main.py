@@ -1,7 +1,10 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.config import settings
+from src.database.init_db import init_db
 from src.routers import (
     auth_router,
     challenge_assignment_router,
@@ -16,7 +19,12 @@ from src.routers import (
     websocket_router,
 )
 
-app = FastAPI(title="ARK Challenge API", version="0.1.0", debug=True)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+app = FastAPI(title="ARK Challenge API", version="0.1.0", debug=True, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
