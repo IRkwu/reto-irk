@@ -2,13 +2,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.config import settings
-from src.database.base import Base
-from src.database.session import engine
-from src.routers import auth_router
+from src.routers import (
+    auth_router,
+    challenge_assignment_router,
+    challenge_player_router,
+    challenge_router,
+    dino_router,
+    gameplay_router,
+    map_router,
+    overlay_router,
+    roulette_router,
+    spawn_zone_router,
+    websocket_router,
+)
 
-Base.metadata.create_all(bind=engine)
-
-app = FastAPI(title="Reto IRK API", version="0.1.0", debug=True)
+app = FastAPI(title="ARK Challenge API", version="0.1.0", debug=True)
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,3 +27,13 @@ app.add_middleware(
 )
 
 app.include_router(auth_router.router)
+app.include_router(dino_router.router)
+app.include_router(map_router.router)
+app.include_router(spawn_zone_router.router)
+app.include_router(challenge_router.router)
+app.include_router(challenge_player_router.router)
+app.include_router(roulette_router.router)
+app.include_router(challenge_assignment_router.router)
+app.include_router(gameplay_router.router)
+app.include_router(overlay_router.router)
+app.include_router(websocket_router.router)
