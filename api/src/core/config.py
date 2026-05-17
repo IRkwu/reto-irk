@@ -16,8 +16,6 @@ class Settings:
 
     CREATURE_IMAGE_BASE_URL: str = os.getenv("CREATURE_IMAGE_BASE_URL")
 
-    DINO_DATA_PATH: str = os.getenv("DINO_DATA_PATH")
-
     @property
     def CORS_ORIGINS_LIST(self) -> list[str]:
         if not self.CORS_ORIGINS:
