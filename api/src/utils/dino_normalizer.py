@@ -1,8 +1,6 @@
 import re
 import unicodedata
 
-from src.core.config import settings
-
 DINO_ALIASES = {
     "spinosaurus": "spinosaur",
     "paraceratherium": "paracer",
@@ -45,7 +43,3 @@ def normalize_dino_slug(name: str) -> str:
 def normalize_map_slug(name: str) -> str:
     clean_name = normalize_text(name)
     return re.sub(r"[^a-z0-9]+", "", clean_name)
-
-def default_dino_image_url(slug: str) -> str:
-    base_url = settings.CREATURE_IMAGE_BASE_URL
-    return f"{base_url.rstrip('/')}/{slug}.png"
