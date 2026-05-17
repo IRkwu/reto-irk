@@ -10,7 +10,7 @@ class ChallengeDinoAssignment(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     challenge_id: Mapped[int] = mapped_column(ForeignKey("challenges.id"), nullable=False, index=True)
-    player_id: Mapped[int] = mapped_column(ForeignKey("challenge_players.id"), nullable=False, index=True)
+    player_id: Mapped[int | None] = mapped_column(ForeignKey("challenge_players.id"), nullable=True, index=True)
     dino_id: Mapped[int] = mapped_column(ForeignKey("dinos.id"), nullable=False, index=True)
     is_tamed: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     tamed_by_player_id: Mapped[int | None] = mapped_column(ForeignKey("challenge_players.id"), index=True)
