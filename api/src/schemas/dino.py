@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from pydantic import BaseModel, ConfigDict
 
@@ -23,7 +23,7 @@ class DinoRead(BaseModel):
     image_url: str | None
     game: str
     is_active: bool
-    created_at: datetime
-    updated_at: datetime
+    created_at: date
+    updated_at: date
 
     model_config = ConfigDict(from_attributes=True)

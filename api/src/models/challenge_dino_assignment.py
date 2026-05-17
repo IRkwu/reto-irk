@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, func
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database.base import Base
@@ -15,7 +15,7 @@ class ChallengeDinoAssignment(Base):
     is_tamed: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     tamed_by_player_id: Mapped[int | None] = mapped_column(ForeignKey("challenge_players.id"), index=True)
     tamed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[date] = mapped_column(Date, server_default=func.current_date())
 
     challenge = relationship("Challenge", back_populates="assignments")
     player = relationship("ChallengePlayer", foreign_keys=[player_id], back_populates="assignments")

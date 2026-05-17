@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -32,7 +32,7 @@ class ChallengeRead(BaseModel):
     current_lives: int
     started_at: datetime | None
     completed_at: datetime | None
-    created_at: datetime
-    updated_at: datetime
+    created_at: date
+    updated_at: date
 
     model_config = ConfigDict(from_attributes=True)

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from pydantic import BaseModel, ConfigDict
 
@@ -17,6 +17,6 @@ class MapRead(BaseModel):
     slug: str
     name: str
     is_active: bool
-    created_at: datetime
+    created_at: date
 
     model_config = ConfigDict(from_attributes=True)

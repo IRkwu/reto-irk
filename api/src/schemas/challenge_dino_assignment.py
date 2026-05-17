@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict
 
@@ -23,6 +23,6 @@ class ChallengeDinoAssignmentRead(BaseModel):
     is_tamed: bool
     tamed_by_player_id: int | None
     tamed_at: datetime | None
-    created_at: datetime
+    created_at: date
 
     model_config = ConfigDict(from_attributes=True)

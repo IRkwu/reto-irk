@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -21,6 +21,6 @@ class ChallengeEventRead(BaseModel):
     dino_id: int | None
     lives_after: int | None
     message: str | None
-    created_at: datetime
+    created_at: date
 
     model_config = ConfigDict(from_attributes=True)
