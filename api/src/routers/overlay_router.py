@@ -26,7 +26,7 @@ def _event_to_overlay_item(event) -> dict:
         "id_event": event.id,
         "event_type": event.event_type,
         "id_player": event.player_id,
-        "player_name": event.player.name if event.player else None,
+        "player_name": event.player.player.name if event.player and event.player.player else None,
         "id_dino": event.dino_id,
         "dino_name": event.dino.name if event.dino else None,
         "lives_after": event.lives_after,

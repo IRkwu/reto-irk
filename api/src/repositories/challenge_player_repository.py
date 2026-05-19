@@ -20,6 +20,20 @@ def get_challenge_player_by_position(
         .one_or_none()
     )
 
+def get_challenge_player_by_profile(
+    db: Session,
+    challenge_id: int,
+    player_id: int,
+) -> ChallengePlayer | None:
+    return (
+        db.query(ChallengePlayer)
+        .filter(
+            ChallengePlayer.challenge_id == challenge_id,
+            ChallengePlayer.player_id == player_id,
+        )
+        .one_or_none()
+    )
+
 def list_challenge_players(
     db: Session,
     challenge_id: int,

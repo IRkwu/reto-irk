@@ -10,6 +10,7 @@ from src.schemas.challenge_player import ChallengePlayerCreate, ChallengePlayerR
 from src.schemas.dino import DinoCreate, DinoRead, DinoUpdate
 from src.schemas.dino_map import DinoMapCreate, DinoMapRead
 from src.schemas.map import MapCreate, MapRead, MapUpdate
+from src.schemas.player import PlayerCreate, PlayerRead, PlayerStatsRead, PlayerUpdate
 from src.schemas.spawn_zone import SpawnZoneCreate, SpawnZoneRead, SpawnZoneUpdate
 from src.schemas.user import UserRead
 
@@ -33,6 +34,10 @@ __all__ = [
     "MapCreate",
     "MapRead",
     "MapUpdate",
+    "PlayerCreate",
+    "PlayerRead",
+    "PlayerStatsRead",
+    "PlayerUpdate",
     "SpawnZoneCreate",
     "SpawnZoneRead",
     "SpawnZoneUpdate",

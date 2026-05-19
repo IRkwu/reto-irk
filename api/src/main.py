@@ -14,6 +14,7 @@ from src.routers import (
     gameplay_router,
     map_router,
     overlay_router,
+    player_router,
     roulette_router,
     spawn_zone_router,
     websocket_router,
@@ -38,6 +39,7 @@ app.include_router(auth_router.router)
 app.include_router(dino_router.router)
 app.include_router(map_router.router)
 app.include_router(spawn_zone_router.router)
+app.include_router(player_router.router)
 app.include_router(challenge_router.router)
 app.include_router(challenge_player_router.router)
 app.include_router(roulette_router.router)

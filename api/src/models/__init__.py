@@ -3,6 +3,7 @@ from src.models.dino import Dino
 from src.models.dino_map import DinoMap
 from src.models.map import Map
 from src.models.spawn_zone import SpawnZone
+from src.models.player import Player
 
 from src.models.challenge import Challenge, ChallengeStatus
 from src.models.challenge_player import ChallengePlayer
@@ -15,6 +16,7 @@ __all__ = [
     "DinoMap",
     "Map",
     "SpawnZone",
+    "Player",
     "Challenge",
     "ChallengeStatus",
     "ChallengePlayer",
