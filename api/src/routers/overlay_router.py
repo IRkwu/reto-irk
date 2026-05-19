@@ -16,7 +16,7 @@ def _get_challenge_or_404(db: Session, challenge_id: int):
     if challenge is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Desafío no encontrado",
+            detail="Desafio no encontrado",
         )
 
     return challenge

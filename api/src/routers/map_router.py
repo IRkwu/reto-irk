@@ -164,7 +164,7 @@ def remove_dino_from_map(
     if dino_map is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Relación dino-mapa no encontrada",
+            detail="Relacion dino-mapa no encontrada",
         )
 
     dino_map_repo.delete_dino_map(db, dino_map)
@@ -182,7 +182,7 @@ def activate_dino_map(
     if dino_map is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Relación dino-mapa no encontrada",
+            detail="Relacion dino-mapa no encontrada",
         )
 
     return dino_map_repo.set_dino_map_active(db, dino_map, True)
@@ -199,7 +199,7 @@ def deactivate_dino_map(
     if dino_map is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Relación dino-mapa no encontrada",
+            detail="Relacion dino-mapa no encontrada",
         )
 
     return dino_map_repo.set_dino_map_active(db, dino_map, False)

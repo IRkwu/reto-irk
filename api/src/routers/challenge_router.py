@@ -21,7 +21,7 @@ def _get_challenge_or_404(db: Session, challenge_id: int):
     if challenge is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Desafío no encontrado",
+            detail="Desafio no encontrado",
         )
 
     return challenge
@@ -130,7 +130,7 @@ async def start_challenge(
     if challenge.status in (ChallengeStatus.completed, ChallengeStatus.cancelled):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No se puede iniciar un desafío finalizado o cancelado",
+            detail="No se puede iniciar un desafio finalizado o cancelado",
         )
 
     assignments_count = len(assignment_repo.list_assignments(db, challenge.id))
@@ -138,7 +138,7 @@ async def start_challenge(
     if assignments_count < 5 or assignments_count > 20:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El desafío debe tener entre 5 y 20 dinos asignados",
+            detail="El desafio debe tener entre 5 y 20 dinos asignados",
         )
 
     challenge = challenge_repo.start_challenge(db, challenge)
@@ -147,7 +147,7 @@ async def start_challenge(
         challenge_id=challenge.id,
         event_type=ChallengeEventType.challenge_started,
         lives_after=challenge.current_lives,
-        message="Desafío iniciado",
+        message="Desafio iniciado",
     )
     await websocket_manager.broadcast(challenge.id, {"type": "challenge_started", "challenge_id": challenge.id})
     return challenge
@@ -163,7 +163,7 @@ async def complete_challenge(
     if challenge.status == ChallengeStatus.cancelled:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No se puede completar un desafío cancelado",
+            detail="No se puede completar un desafio cancelado",
         )
 
     challenge = challenge_repo.complete_challenge(db, challenge)
@@ -172,7 +172,7 @@ async def complete_challenge(
         challenge_id=challenge.id,
         event_type=ChallengeEventType.challenge_completed,
         lives_after=challenge.current_lives,
-        message="Desafío completado",
+        message="Desafio completado",
     )
     await websocket_manager.broadcast(challenge.id, {"type": "challenge_completed", "challenge_id": challenge.id})
     return challenge
@@ -188,7 +188,7 @@ async def cancel_challenge(
     if challenge.status == ChallengeStatus.completed:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No se puede cancelar un desafío completado",
+            detail="No se puede cancelar un desafio completado",
         )
 
     challenge = challenge_repo.cancel_challenge(db, challenge)
@@ -197,7 +197,7 @@ async def cancel_challenge(
         challenge_id=challenge.id,
         event_type=ChallengeEventType.challenge_cancelled,
         lives_after=challenge.current_lives,
-        message="Desafío cancelado",
+        message="Desafio cancelado",
     )
     await websocket_manager.broadcast(challenge.id, {"type": "challenge_cancelled", "challenge_id": challenge.id})
     return challenge

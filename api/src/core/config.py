@@ -29,13 +29,13 @@ settings = Settings()
 
 # Validaciones
 if not settings.DATABASE_URL:
-    raise RuntimeError("DATABASE_URL no está definida en el archivo .env")
+    raise RuntimeError("DATABASE_URL no esta definida en el archivo .env")
 
 if not settings.SECRET_KEY:
-    raise RuntimeError("SECRET_KEY no está definida en el archivo .env")
+    raise RuntimeError("SECRET_KEY no esta definida en el archivo .env")
 
 if not settings.ADMIN_USERNAME:
-    raise RuntimeError("ADMIN_USERNAME no está definido en el archivo .env")
+    raise RuntimeError("ADMIN_USERNAME no esta definido en el archivo .env")
 
 if not settings.ADMIN_PASSWORD:
-    raise RuntimeError("ADMIN_PASSWORD no está definido en el archivo .env")
+    raise RuntimeError("ADMIN_PASSWORD no esta definido en el archivo .env")

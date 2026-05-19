@@ -21,7 +21,7 @@ def _get_challenge_or_404(db: Session, challenge_id: int):
     if challenge is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Desafío no encontrado",
+            detail="Desafio no encontrado",
         )
 
     return challenge
@@ -38,7 +38,7 @@ def _validate_optional_references(
         if player is None or player.challenge_id != challenge_id:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Jugador no encontrado en este desafío",
+                detail="Jugador no encontrado en este desafio",
             )
 
     if dino_id is not None and dino_repo.get_dino(db, dino_id) is None:

@@ -22,7 +22,7 @@ def create_access_token(data: dict) -> str:
 def decode_access_token(token: str) -> dict:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Token inválido o expirado",
+        detail="Token invalido o expirado",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
@@ -49,7 +49,7 @@ def get_current_admin(token: str = Depends(oauth2_scheme)) -> dict:
     if user["username"] != settings.ADMIN_USERNAME:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="No tienes permisos para realizar esta acción",
+            detail="No tienes permisos para realizar esta accion",
         )
 
     return user

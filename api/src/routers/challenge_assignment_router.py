@@ -30,7 +30,7 @@ def _get_challenge_or_404(db: Session, challenge_id: int):
     if challenge is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Desafío no encontrado",
+            detail="Desafio no encontrado",
         )
 
     return challenge
@@ -41,7 +41,7 @@ def _get_assignment_or_404(db: Session, challenge_id: int, assignment_id: int):
     if assignment is None or assignment.challenge_id != challenge_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Asignación no encontrada en este desafío",
+            detail="Asignacion no encontrada en este desafio",
         )
 
     return assignment
@@ -50,7 +50,7 @@ def _ensure_draft_challenge(challenge) -> None:
     if challenge.status != ChallengeStatus.draft:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Solo se pueden editar asignaciones mientras el desafío esté en borrador",
+            detail="Solo se pueden editar asignaciones mientras el desafio este en borrador",
         )
 
 def _validate_player_and_dino(db: Session, challenge_id: int, player_id: int | None, dino_id: int) -> None:
@@ -60,7 +60,7 @@ def _validate_player_and_dino(db: Session, challenge_id: int, player_id: int | N
         if player is None or player.challenge_id != challenge_id:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Jugador no encontrado en este desafío",
+                detail="Jugador no encontrado en este desafio",
             )
 
     if dino_repo.get_dino(db, dino_id) is None:
@@ -83,7 +83,7 @@ async def _complete_challenge_if_ready(db: Session, challenge_id: int) -> None:
             challenge_id=challenge_id,
             event_type=ChallengeEventType.challenge_completed,
             lives_after=challenge.current_lives,
-            message="DesafÃ­o completado",
+            message="Desafio completado",
         )
         await websocket_manager.broadcast(challenge_id, {"type": "challenge_completed", "challenge_id": challenge_id})
 
@@ -118,7 +118,7 @@ async def create_assignment(
     if len(assignment_repo.list_assignments(db, challenge_id)) >= 20:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El desafío no puede tener más de 20 dinos asignados",
+            detail="El desafio no puede tener mas de 20 dinos asignados",
         )
 
     _validate_player_and_dino(
@@ -160,7 +160,7 @@ async def update_assignment(
         if player is None or player.challenge_id != challenge_id:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Jugador que tameó no encontrado en este desafío",
+                detail="Jugador que tameo no encontrado en este desafio",
             )
 
     assignment = assignment_repo.update_assignment(db, assignment, assignment_data)
@@ -186,7 +186,7 @@ async def mark_assignment_tamed(
         if player is None or player.challenge_id != challenge_id:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Jugador no encontrado en este desafío",
+                detail="Jugador no encontrado en este desafio",
             )
 
     assignment = assignment_repo.mark_assignment_tamed(db, assignment, tamed_by_player_id)
