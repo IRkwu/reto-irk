@@ -4,15 +4,18 @@ from pydantic import BaseModel, ConfigDict
 
 class PlayerCreate(BaseModel):
     name: str
+    icon_url: str | None = None
     is_active: bool = True
 
 class PlayerUpdate(BaseModel):
     name: str | None = None
+    icon_url: str | None = None
     is_active: bool | None = None
 
 class PlayerRead(BaseModel):
     id: int
     name: str
+    icon_url: str | None = None
     is_active: bool
     created_at: date
     updated_at: date
@@ -22,6 +25,7 @@ class PlayerRead(BaseModel):
 class PlayerStatsRead(BaseModel):
     id: int
     name: str
+    icon_url: str | None = None
     is_active: bool
     challenges_participated: int
     challenges_completed: int

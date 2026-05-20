@@ -10,6 +10,7 @@ class Player(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(100), unique=True, index=True, nullable=False)
+    icon_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
     created_at: Mapped[date] = mapped_column(Date, server_default=func.current_date())
     updated_at: Mapped[date] = mapped_column(Date, server_default=func.current_date(), onupdate=func.current_date())

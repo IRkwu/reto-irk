@@ -106,6 +106,7 @@ def get_player_stats(db: Session, player: Player) -> dict:
     return {
         "id": player.id,
         "name": player.name,
+        "icon_url": player.icon_url,
         "is_active": player.is_active,
         "challenges_participated": len(challenge_ids),
         "challenges_completed": challenges_completed,
