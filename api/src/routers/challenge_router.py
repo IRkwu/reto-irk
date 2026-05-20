@@ -1,12 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
+from src.core.challenge_rules import MAX_DINOS_PER_PLAYER, MIN_DINOS_PER_PLAYER
 from src.core.security import get_current_admin
 from src.database.session import get_db
 from src.models.challenge import ChallengeStatus
 from src.models.challenge_event import ChallengeEventType
 from src.repositories import challenge_dino_assignment_repository as assignment_repo
 from src.repositories import challenge_event_repository as event_repo
+from src.repositories import challenge_player_repository as player_repo
 from src.repositories import challenge_repository as challenge_repo
 from src.repositories import map_repository as map_repo
 from src.repositories import spawn_zone_repository as spawn_zone_repo
@@ -133,13 +135,45 @@ async def start_challenge(
             detail="No se puede iniciar un desafio finalizado o cancelado",
         )
 
-    assignments_count = len(assignment_repo.list_assignments(db, challenge.id))
+    active_players = player_repo.list_challenge_players(
+        db=db,
+        challenge_id=challenge.id,
+        is_active=True,
+    )
 
-    if assignments_count < 5 or assignments_count > 20:
+    if len(active_players) != challenge.player_count:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El desafio debe tener entre 5 y 20 dinos asignados",
+            detail="El desafio debe tener la cantidad de jugadores activos configurada",
         )
+
+    unassigned_count = len([
+        assignment
+        for assignment in assignment_repo.list_assignments(db, challenge.id)
+        if assignment.player_id is None
+    ])
+
+    if unassigned_count:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Todos los dinos deben estar asignados a un jugador",
+        )
+
+    for player in active_players:
+        assignments_count = len(
+            assignment_repo.list_assignments(
+                db=db,
+                challenge_id=challenge.id,
+                player_id=player.id,
+            )
+        )
+
+        if assignments_count < MIN_DINOS_PER_PLAYER or assignments_count > MAX_DINOS_PER_PLAYER:
+            player_name = player.player.name if player.player else f"Jugador {player.position}"
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"{player_name} debe tener entre 5 y 20 dinos asignados",
+            )
 
     challenge = challenge_repo.start_challenge(db, challenge)
     event_repo.create_challenge_event(
