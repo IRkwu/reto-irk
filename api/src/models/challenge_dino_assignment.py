@@ -1,12 +1,15 @@
 from datetime import date, datetime
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, func
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database.base import Base
 
 class ChallengeDinoAssignment(Base):
     __tablename__ = "challenge_dino_assignments"
+    __table_args__ = (
+        UniqueConstraint("challenge_id", "dino_id", name="uq_challenge_assignment_dino"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     challenge_id: Mapped[int] = mapped_column(ForeignKey("challenges.id"), nullable=False, index=True)

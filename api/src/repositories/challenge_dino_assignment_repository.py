@@ -12,6 +12,20 @@ def get_assignment(db: Session, assignment_id: int) -> ChallengeDinoAssignment |
         .one_or_none()
     )
 
+def get_assignment_by_dino(
+    db: Session,
+    challenge_id: int,
+    dino_id: int,
+) -> ChallengeDinoAssignment | None:
+    return (
+        db.query(ChallengeDinoAssignment)
+        .filter(
+            ChallengeDinoAssignment.challenge_id == challenge_id,
+            ChallengeDinoAssignment.dino_id == dino_id,
+        )
+        .one_or_none()
+    )
+
 def list_assignments(
     db: Session,
     challenge_id: int,
@@ -82,3 +96,40 @@ def mark_assignment_untamed(
 def delete_assignment(db: Session, assignment: ChallengeDinoAssignment) -> None:
     db.delete(assignment)
     db.commit()
+
+def delete_assignments_for_player(
+    db: Session,
+    challenge_id: int,
+    player_id: int,
+) -> int:
+    assignments = (
+        db.query(ChallengeDinoAssignment)
+        .filter(
+            ChallengeDinoAssignment.challenge_id == challenge_id,
+            ChallengeDinoAssignment.player_id == player_id,
+        )
+        .all()
+    )
+
+    deleted_count = len(assignments)
+
+    for assignment in assignments:
+        db.delete(assignment)
+
+    (
+        db.query(ChallengeDinoAssignment)
+        .filter(
+            ChallengeDinoAssignment.challenge_id == challenge_id,
+            ChallengeDinoAssignment.tamed_by_player_id == player_id,
+        )
+        .update(
+            {
+                ChallengeDinoAssignment.tamed_by_player_id: None,
+                ChallengeDinoAssignment.tamed_at: None,
+            },
+            synchronize_session=False,
+        )
+    )
+
+    db.commit()
+    return deleted_count

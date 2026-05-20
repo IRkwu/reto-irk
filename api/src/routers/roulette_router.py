@@ -3,6 +3,7 @@ import random
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from src.core.challenge_rules import MAX_DINOS_PER_PLAYER
 from src.core.security import get_current_admin
 from src.database.session import get_db
 from src.models.challenge import ChallengeStatus
@@ -92,20 +93,31 @@ async def create_assignment_from_roulette(
     challenge = _get_challenge_or_404(db, challenge_id)
     _ensure_draft_challenge(challenge)
 
-    if len(assignment_repo.list_assignments(db, challenge_id)) >= 20:
+    player_assignments = assignment_repo.list_assignments(
+        db=db,
+        challenge_id=challenge_id,
+        player_id=roulette_data.player_id,
+    )
+
+    if len(player_assignments) >= MAX_DINOS_PER_PLAYER:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El desafio no puede tener mas de 20 dinos asignados",
+            detail="Un jugador no puede tener mas de 20 dinos asignados",
         )
 
-    if roulette_data.player_id is not None:
-        player = player_repo.get_challenge_player(db, roulette_data.player_id)
+    player = player_repo.get_challenge_player(db, roulette_data.player_id)
 
-        if player is None or player.challenge_id != challenge_id:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Jugador no encontrado en este desafio",
-            )
+    if player is None or player.challenge_id != challenge_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Jugador no encontrado en este desafio",
+        )
+
+    if not player.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se pueden asignar dinos a un jugador inactivo",
+        )
 
     dino = dino_repo.get_dino(db, roulette_data.dino_id)
     dino_map = dino_map_repo.get_dino_map_by_pair(
@@ -120,7 +132,11 @@ async def create_assignment_from_roulette(
             detail="El dino no esta disponible para el mapa del desafio",
         )
 
-    if any(assignment.dino_id == roulette_data.dino_id for assignment in assignment_repo.list_assignments(db, challenge_id)):
+    if assignment_repo.get_assignment_by_dino(
+        db=db,
+        challenge_id=challenge_id,
+        dino_id=roulette_data.dino_id,
+    ) is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="El dino ya esta asignado en este desafio",

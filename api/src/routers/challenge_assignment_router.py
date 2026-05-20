@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
+from src.core.challenge_rules import MAX_DINOS_PER_PLAYER
 from src.core.security import get_current_admin
 from src.database.session import get_db
 from src.models.challenge import ChallengeStatus
@@ -17,7 +18,7 @@ from src.utils.websocket_manager import websocket_manager
 router = APIRouter(prefix="/challenges/{challenge_id}/assignments", tags=["challenge assignments"])
 
 class ChallengeDinoAssignmentBody(BaseModel):
-    player_id: int | None = None
+    player_id: int
     dino_id: int
     is_tamed: bool = False
 
@@ -54,19 +55,48 @@ def _ensure_draft_challenge(challenge) -> None:
         )
 
 def _validate_player_and_dino(db: Session, challenge_id: int, player_id: int | None, dino_id: int) -> None:
-    if player_id is not None:
-        player = player_repo.get_challenge_player(db, player_id)
+    if player_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cada dino debe estar asignado a un jugador del desafio",
+        )
 
-        if player is None or player.challenge_id != challenge_id:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Jugador no encontrado en este desafio",
-            )
+    player = player_repo.get_challenge_player(db, player_id)
+
+    if player is None or player.challenge_id != challenge_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Jugador no encontrado en este desafio",
+        )
+
+    if not player.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se pueden asignar dinos a un jugador inactivo",
+        )
 
     if dino_repo.get_dino(db, dino_id) is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Dino no encontrado",
+        )
+
+def _ensure_dino_available(
+    db: Session,
+    challenge_id: int,
+    dino_id: int,
+    current_assignment_id: int | None = None,
+) -> None:
+    existing_assignment = assignment_repo.get_assignment_by_dino(
+        db=db,
+        challenge_id=challenge_id,
+        dino_id=dino_id,
+    )
+
+    if existing_assignment is not None and existing_assignment.id != current_assignment_id:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="El dino ya esta asignado en este desafio",
         )
 
 async def _complete_challenge_if_ready(db: Session, challenge_id: int) -> None:
@@ -115,16 +145,27 @@ async def create_assignment(
     challenge = _get_challenge_or_404(db, challenge_id)
     _ensure_draft_challenge(challenge)
 
-    if len(assignment_repo.list_assignments(db, challenge_id)) >= 20:
+    player_assignments = assignment_repo.list_assignments(
+        db=db,
+        challenge_id=challenge_id,
+        player_id=assignment_data.player_id,
+    )
+
+    if len(player_assignments) >= MAX_DINOS_PER_PLAYER:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El desafio no puede tener mas de 20 dinos asignados",
+            detail="Un jugador no puede tener mas de 20 dinos asignados",
         )
 
     _validate_player_and_dino(
         db=db,
         challenge_id=challenge_id,
         player_id=assignment_data.player_id,
+        dino_id=assignment_data.dino_id,
+    )
+    _ensure_dino_available(
+        db=db,
+        challenge_id=challenge_id,
         dino_id=assignment_data.dino_id,
     )
 
@@ -150,9 +191,34 @@ async def update_assignment(
     _ensure_draft_challenge(challenge)
     assignment = _get_assignment_or_404(db, challenge_id, assignment_id)
 
+    if "player_id" in assignment_data.model_fields_set and assignment_data.player_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cada dino debe estar asignado a un jugador del desafio",
+        )
+
     player_id = assignment_data.player_id if assignment_data.player_id is not None else assignment.player_id
     dino_id = assignment_data.dino_id if assignment_data.dino_id is not None else assignment.dino_id
     _validate_player_and_dino(db, challenge_id, player_id, dino_id)
+    _ensure_dino_available(
+        db=db,
+        challenge_id=challenge_id,
+        dino_id=dino_id,
+        current_assignment_id=assignment.id,
+    )
+
+    if player_id != assignment.player_id:
+        player_assignments = assignment_repo.list_assignments(
+            db=db,
+            challenge_id=challenge_id,
+            player_id=player_id,
+        )
+
+        if len(player_assignments) >= MAX_DINOS_PER_PLAYER:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Un jugador no puede tener mas de 20 dinos asignados",
+            )
 
     if assignment_data.tamed_by_player_id is not None:
         player = player_repo.get_challenge_player(db, assignment_data.tamed_by_player_id)

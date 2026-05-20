@@ -8,7 +8,7 @@ class RouletteRollRead(BaseModel):
 
 class RouletteAssignBody(BaseModel):
     dino_id: int
-    player_id: int | None = None
+    player_id: int
 
 class RouletteAssignRead(BaseModel):
     assignment: ChallengeDinoAssignmentRead
