@@ -4,14 +4,18 @@ from pathlib import Path
 from src.database.session import SessionLocal
 from src.utils.import_dinos import import_ark_catalog
 
-def main() -> None:
-    default_data_dir = Path(__file__).resolve().parents[2] / "data"
 
-    parser = argparse.ArgumentParser(description="Importa dinos tameables, imagenes y relaciones por mapa desde data/.")
+def main() -> None:
+    default_data_dir = Path(__file__).resolve().parent.parent / "import_data"
+
+    parser = argparse.ArgumentParser(
+        description="Importa mapas, dinos, relaciones y zonas de spawn desde los CSV de api/import_data/."
+    )
     parser.add_argument(
         "--data-dir",
-        default=str(default_data_dir),
-        help="Ruta a la carpeta data del proyecto.",
+        default=default_data_dir,
+        type=Path,
+        help="Ruta a la carpeta import_data dentro de api.",
     )
     args = parser.parse_args()
 

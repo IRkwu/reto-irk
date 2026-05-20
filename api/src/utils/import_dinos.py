@@ -1,31 +1,53 @@
 from pathlib import Path
+import csv
+import re
 
 from sqlalchemy.orm import Session
 
 from src.models.dino import Dino
 from src.models.dino_map import DinoMap
 from src.models.map import Map
-from src.utils.dino_normalizer import normalize_dino_slug, normalize_map_slug
+from src.models.spawn_zone import SpawnZone
 
-def _read_txt_lines(path: Path) -> list[str]:
+ASSET_IMAGE_EXTENSION = ".webp"
+
+def _read_csv_rows(path: Path, required_columns: set[str]) -> list[dict[str, str]]:
     if not path.exists():
-        raise FileNotFoundError(f"Archivo TXT no encontrado: {path}")
+        raise FileNotFoundError(f"Archivo CSV no encontrado: {path}")
 
-    return [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    with path.open("r", encoding="utf-8-sig", newline="") as file:
+        reader = csv.DictReader(file)
+        columns = set(reader.fieldnames or [])
+        missing_columns = required_columns - columns
 
-def _map_name_from_file(path: Path) -> str:
-    stem = path.stem.strip().lower()
+        if missing_columns:
+            missing = ", ".join(sorted(missing_columns))
+            raise ValueError(f"Al CSV {path.name} le faltan columnas: {missing}")
 
-    return " ".join(word.capitalize() for word in stem.split("-"))
+        return [
+            {key: (value or "").strip() for key, value in row.items()}
+            for row in reader
+            if any((value or "").strip() for value in row.values())
+        ]
 
-def _display_name_from_slug(slug: str) -> str:
-    return " ".join(part.capitalize() for part in slug.replace("_", "-").split("-") if part) or slug
+def _name_key(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", name.strip().lower())
+
+def _asset_file_stem(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", name.strip().lower()).strip("_")
+
+def _public_asset_url(asset_dir: str, name: str) -> str | None:
+    file_stem = _asset_file_stem(name)
+    if not file_stem:
+        return None
+
+    return f"/assets/{asset_dir}/{file_stem}{ASSET_IMAGE_EXTENSION}"
 
 def _should_replace_dino_name(current_name: str, candidate_name: str) -> bool:
-    current_slug = normalize_dino_slug(current_name)
-    candidate_slug = normalize_dino_slug(candidate_name)
+    current_key = _name_key(current_name)
+    candidate_key = _name_key(candidate_name)
 
-    if current_slug != candidate_slug:
+    if current_key != candidate_key:
         return False
 
     if current_name == current_name.lower() and candidate_name != candidate_name.lower():
@@ -33,34 +55,59 @@ def _should_replace_dino_name(current_name: str, candidate_name: str) -> bool:
 
     return " " not in current_name and " " in candidate_name
 
-def _get_or_create_map(db: Session, map_name: str) -> tuple[Map, bool]:
-    map_slug = normalize_map_slug(map_name)
-    map_item = db.query(Map).filter(Map.slug == map_slug).one_or_none()
+def _get_or_create_map(
+    db: Session,
+    map_name: str,
+    image_url: str | None = None,
+) -> tuple[Map, bool, bool]:
+    map_key = _name_key(map_name)
+    map_item = next(
+        (
+            map_item
+            for map_item in db.query(Map).all()
+            if _name_key(map_item.name) == map_key
+        ),
+        None,
+    )
+    updated = False
 
     if map_item:
         if not map_item.is_active:
             map_item.is_active = True
+            updated = True
 
-        return map_item, False
+        if image_url and map_item.image_url != image_url:
+            map_item.image_url = image_url
+            updated = True
+
+        return map_item, False, updated
 
     map_item = Map(
-        slug=map_slug,
         name=map_name,
+        image_url=image_url,
         is_active=True,
     )
 
     db.add(map_item)
     db.flush()
 
-    return map_item, True
+    return map_item, True, False
 
 def _get_or_create_dino(
     db: Session,
     name: str,
+    game: str,
     image_url: str | None = None,
 ) -> tuple[Dino, bool, bool]:
-    slug = normalize_dino_slug(name)
-    dino = db.query(Dino).filter(Dino.slug == slug).one_or_none()
+    name_key = _name_key(name)
+    dino = next(
+        (
+            dino
+            for dino in db.query(Dino).all()
+            if _name_key(dino.name) == name_key
+        ),
+        None,
+    )
     updated = False
 
     if dino:
@@ -76,13 +123,16 @@ def _get_or_create_dino(
             dino.name = name
             updated = True
 
+        if game and dino.game != game:
+            dino.game = game
+            updated = True
+
         return dino, False, updated
 
     dino = Dino(
         name=name,
-        slug=slug,
         is_active=True,
-        game="ark_survival_evolved",
+        game=game,
         image_url=image_url,
     )
 
@@ -118,102 +168,149 @@ def _link_dino_to_map(db: Session, dino: Dino, map_item: Map) -> tuple[bool, boo
 
     return True, False
 
-def load_dino_image_urls(catalog_path: str | Path, image_path: str | Path) -> dict[str, str]:
-    catalog_lines = _read_txt_lines(Path(catalog_path))
-    image_lines = _read_txt_lines(Path(image_path))
+def _get_or_create_spawn_zone(
+    db: Session,
+    map_item: Map,
+    name: str,
+) -> tuple[SpawnZone, bool, bool]:
+    zone_key = _name_key(name)
+    spawn_zone = next(
+        (
+            spawn_zone
+            for spawn_zone in map_item.spawn_zones
+            if _name_key(spawn_zone.name) == zone_key
+        ),
+        None,
+    )
+    updated = False
 
-    if len(catalog_lines) != len(image_lines):
-        raise ValueError(
-            "Los archivos de dinos e imagenes deben tener la misma cantidad de lineas "
-            f"({len(catalog_lines)} dinos vs {len(image_lines)} imagenes)."
-        )
+    if spawn_zone:
+        if not spawn_zone.is_active:
+            spawn_zone.is_active = True
+            updated = True
 
-    return {
-        normalize_dino_slug(name): image_url
-        for name, image_url in zip(catalog_lines, image_lines, strict=True)
-    }
+        return spawn_zone, False, updated
 
-def import_dinos_for_map(db: Session, map_name: str, txt_path: str | Path) -> dict[str, int]:
-    map_item, _ = _get_or_create_map(db, map_name)
+    spawn_zone = SpawnZone(
+        map_id=map_item.id,
+        name=name,
+        is_active=True,
+    )
 
-    created_dinos = 0
-    linked_dinos = 0
-    reactivated_links = 0
+    db.add(spawn_zone)
+    db.flush()
 
-    for name in _read_txt_lines(Path(txt_path)):
-        dino, created, _ = _get_or_create_dino(db, name)
-        linked, reactivated = _link_dino_to_map(db, dino, map_item)
-
-        created_dinos += int(created)
-        linked_dinos += int(linked)
-        reactivated_links += int(reactivated)
-
-    db.commit()
-
-    return {
-        "created_dinos": created_dinos,
-        "linked_dinos": linked_dinos,
-        "reactivated_links": reactivated_links,
-    }
+    return spawn_zone, True, False
 
 def import_ark_catalog(
     db: Session,
     data_dir: str | Path,
 ) -> dict[str, int]:
     data_path = Path(data_dir)
-    catalog_path = data_path/"tameable-dinos-ark.txt"
-    image_path = data_path/"images-tameable-dinos-ark.txt"
-    maps_path = data_path/"tameable-dinos-per-map"
+    maps_path = data_path / "maps.csv"
+    dinos_path = data_path / "dinos.csv"
+    map_dinos_path = data_path / "map_dinos.csv"
+    spawn_zones_path = data_path / "spawn_zones.csv"
 
-    if not maps_path.exists():
-        raise FileNotFoundError(f"Carpeta de dinos por mapa no encontrada: {maps_path}")
-
-    image_urls_by_slug = load_dino_image_urls(catalog_path, image_path)
+    map_rows = _read_csv_rows(maps_path, {"map_name"})
+    dino_rows = _read_csv_rows(dinos_path, {"dino_name", "game"})
+    map_dino_rows = _read_csv_rows(map_dinos_path, {"map_name", "dino_name"})
+    spawn_zone_rows = _read_csv_rows(spawn_zones_path, {"map_name", "zone_name"})
 
     stats = {
         "created_dinos": 0,
         "updated_dinos": 0,
         "created_maps": 0,
+        "updated_maps": 0,
         "linked_dinos": 0,
         "reactivated_links": 0,
-        "map_only_dinos": 0,
+        "created_spawn_zones": 0,
+        "updated_spawn_zones": 0,
+        "missing_maps": 0,
+        "missing_dinos": 0,
     }
-    map_only_slugs: set[str] = set()
+    maps_by_key: dict[str, Map] = {}
+    dinos_by_key: dict[str, Dino] = {}
+    missing_map_keys: set[str] = set()
+    missing_dino_keys: set[str] = set()
 
-    for catalog_name in _read_txt_lines(catalog_path):
-        slug = normalize_dino_slug(catalog_name)
-        dino_name = _display_name_from_slug(catalog_name)
-        _, created, updated = _get_or_create_dino(
+    for row in map_rows:
+        map_name = row["map_name"]
+        if not map_name:
+            continue
+
+        map_image_url = _public_asset_url("maps", map_name)
+        map_item, map_created, map_updated = _get_or_create_map(
+            db,
+            map_name,
+            image_url=map_image_url,
+        )
+        maps_by_key[_name_key(map_name)] = map_item
+        stats["created_maps"] += int(map_created)
+        stats["updated_maps"] += int(map_updated)
+
+    for row in dino_rows:
+        dino_name = row["dino_name"]
+        if not dino_name:
+            continue
+
+        dino_game = row["game"]
+        dino_image_url = _public_asset_url("dinos", dino_name)
+        dino, created, updated = _get_or_create_dino(
             db,
             name=dino_name,
-            image_url=image_urls_by_slug.get(slug),
+            game=dino_game,
+            image_url=dino_image_url,
         )
-
+        dinos_by_key[_name_key(dino_name)] = dino
         stats["created_dinos"] += int(created)
         stats["updated_dinos"] += int(updated)
 
-    for map_file in sorted(maps_path.glob("*.txt")):
-        map_item, map_created = _get_or_create_map(db, _map_name_from_file(map_file))
-        stats["created_maps"] += int(map_created)
+    for row in map_dino_rows:
+        map_name = row["map_name"]
+        dino_name = row["dino_name"]
+        if not map_name or not dino_name:
+            continue
 
-        for dino_name in _read_txt_lines(map_file):
-            slug = normalize_dino_slug(dino_name)
-            if slug not in image_urls_by_slug:
-                map_only_slugs.add(slug)
+        map_key = _name_key(map_name)
+        dino_key = _name_key(dino_name)
+        map_item = maps_by_key.get(map_key)
+        dino = dinos_by_key.get(dino_key)
 
-            dino, created, updated = _get_or_create_dino(
-                db,
-                name=dino_name,
-                image_url=image_urls_by_slug.get(slug),
-            )
-            linked, reactivated = _link_dino_to_map(db, dino, map_item)
+        if map_item is None:
+            missing_map_keys.add(map_key)
+            continue
 
-            stats["created_dinos"] += int(created)
-            stats["updated_dinos"] += int(updated)
-            stats["linked_dinos"] += int(linked)
-            stats["reactivated_links"] += int(reactivated)
+        if dino is None:
+            missing_dino_keys.add(dino_key)
+            continue
 
-    stats["map_only_dinos"] = len(map_only_slugs)
+        linked, reactivated = _link_dino_to_map(db, dino, map_item)
+        stats["linked_dinos"] += int(linked)
+        stats["reactivated_links"] += int(reactivated)
+
+    for row in spawn_zone_rows:
+        map_name = row["map_name"]
+        zone_name = row["zone_name"]
+        if not map_name or not zone_name:
+            continue
+
+        map_key = _name_key(map_name)
+        map_item = maps_by_key.get(map_key)
+        if map_item is None:
+            missing_map_keys.add(map_key)
+            continue
+
+        _, created, updated = _get_or_create_spawn_zone(
+            db,
+            map_item,
+            zone_name,
+        )
+        stats["created_spawn_zones"] += int(created)
+        stats["updated_spawn_zones"] += int(updated)
+
+    stats["missing_maps"] = len(missing_map_keys)
+    stats["missing_dinos"] = len(missing_dino_keys)
 
     db.commit()
 
