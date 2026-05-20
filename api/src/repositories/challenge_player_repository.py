@@ -34,6 +34,20 @@ def get_challenge_player_by_profile(
         .one_or_none()
     )
 
+def get_challenge_player_by_spawn_zone(
+    db: Session,
+    challenge_id: int,
+    spawn_zone_id: int,
+) -> ChallengePlayer | None:
+    return (
+        db.query(ChallengePlayer)
+        .filter(
+            ChallengePlayer.challenge_id == challenge_id,
+            ChallengePlayer.spawn_zone_id == spawn_zone_id,
+        )
+        .one_or_none()
+    )
+
 def list_challenge_players(
     db: Session,
     challenge_id: int,
@@ -45,6 +59,14 @@ def list_challenge_players(
         query = query.filter(ChallengePlayer.is_active == is_active)
 
     return query.order_by(ChallengePlayer.position.asc()).all()
+
+def has_challenge_players_for_spawn_zone(db: Session, spawn_zone_id: int) -> bool:
+    return (
+        db.query(ChallengePlayer.id)
+        .filter(ChallengePlayer.spawn_zone_id == spawn_zone_id)
+        .first()
+        is not None
+    )
 
 def create_challenge_player(
     db: Session,
