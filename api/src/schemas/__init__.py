@@ -1,10 +1,6 @@
 from src.schemas.auth import CurrentUser, Token
 from src.schemas.challenge import ChallengeCreate, ChallengeRead, ChallengeUpdate
-from src.schemas.challenge_dino_assignment import (
-    ChallengeDinoAssignmentCreate,
-    ChallengeDinoAssignmentRead,
-    ChallengeDinoAssignmentUpdate,
-)
+from src.schemas.challenge_dino_assignment import ChallengeDinoAssignmentCreate, ChallengeDinoAssignmentRead, ChallengeDinoAssignmentUpdate
 from src.schemas.challenge_event import ChallengeEventRead
 from src.schemas.challenge_player import ChallengePlayerCreate, ChallengePlayerRead, ChallengePlayerUpdate
 from src.schemas.dino import DinoCreate, DinoRead, DinoUpdate
