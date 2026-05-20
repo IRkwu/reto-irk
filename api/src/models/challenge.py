@@ -4,6 +4,7 @@ from enum import StrEnum
 from sqlalchemy import Date, DateTime, Enum, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.core.challenge_rules import DEFAULT_BASE_LIVES_PER_PLAYER, DEFAULT_PLAYER_COUNT
 from src.database.base import Base
 
 class ChallengeStatus(StrEnum):
@@ -20,8 +21,8 @@ class Challenge(Base):
     map_id: Mapped[int] = mapped_column(ForeignKey("maps.id"), nullable=False, index=True)
     spawn_zone_id: Mapped[int | None] = mapped_column(ForeignKey("spawn_zones.id"), nullable=True, index=True)
     status: Mapped[ChallengeStatus] = mapped_column(Enum(ChallengeStatus), default=ChallengeStatus.draft, nullable=False, index=True)
-    player_count: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
-    base_lives_per_player: Mapped[int] = mapped_column(Integer, default=10, nullable=False)
+    player_count: Mapped[int] = mapped_column(Integer, default=DEFAULT_PLAYER_COUNT, nullable=False)
+    base_lives_per_player: Mapped[int] = mapped_column(Integer, default=DEFAULT_BASE_LIVES_PER_PLAYER, nullable=False)
     current_lives: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
