@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from src.models.map import Map
@@ -6,8 +7,9 @@ from src.schemas.map import MapCreate, MapUpdate
 def get_map(db: Session, map_id: int) -> Map | None:
     return db.query(Map).filter(Map.id == map_id).one_or_none()
 
-def get_map_by_slug(db: Session, slug: str) -> Map | None:
-    return db.query(Map).filter(Map.slug == slug).one_or_none()
+def get_map_by_name(db: Session, name: str) -> Map | None:
+    clean_name = name.strip().lower()
+    return db.query(Map).filter(func.lower(Map.name) == clean_name).one_or_none()
 
 def list_maps(
     db: Session,

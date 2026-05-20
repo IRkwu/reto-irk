@@ -10,7 +10,6 @@ class Dino(Base):
     __tablename__ = "dinos"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    slug: Mapped[str] = mapped_column(String(150), unique=True, index=True, nullable=False)
     name: Mapped[str] = mapped_column(String(150), index=True, nullable=False)
     image_url: Mapped[str | None] = mapped_column(String(500))
     game: Mapped[str] = mapped_column(String(100), default="ark_survival_evolved", nullable=False, index=True)

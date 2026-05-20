@@ -10,8 +10,8 @@ class Map(Base):
     __tablename__ = "maps"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    slug: Mapped[str] = mapped_column(String(150), unique=True, index=True, nullable=False)
     name: Mapped[str] = mapped_column(String(150), nullable=False)
+    image_url: Mapped[str | None] = mapped_column(String(500))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
     created_at: Mapped[date] = mapped_column(Date, nullable=False, server_default=func.current_date())
 

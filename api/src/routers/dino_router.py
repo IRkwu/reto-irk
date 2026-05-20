@@ -14,7 +14,7 @@ def list_dinos(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=200),
     name: str | None = None,
-    slug: str | None = None,
+    search: str | None = None,
     game: str | None = None,
     is_active: bool | None = None,
     id_map: int | None = None,
@@ -32,7 +32,7 @@ def list_dinos(
         skip=skip,
         limit=limit,
         name=name,
-        slug=slug,
+        search=search,
         game=game,
         is_active=is_active,
         map_id=id_map,
@@ -60,12 +60,12 @@ def create_dino(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_admin),
 ) -> DinoRead:
-    existing_dino = dino_repo.get_dino_by_slug(db, dino_data.slug)
+    existing_dino = dino_repo.get_dino_by_name(db, dino_data.name)
 
     if existing_dino is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Ya existe un dino con ese slug",
+            detail="Ya existe un dino con ese nombre",
         )
 
     return dino_repo.create_dino(db, dino_data)
@@ -85,13 +85,13 @@ def update_dino(
             detail="Dino no encontrado",
         )
 
-    if dino_data.slug is not None:
-        existing_dino = dino_repo.get_dino_by_slug(db, dino_data.slug)
+    if dino_data.name is not None:
+        existing_dino = dino_repo.get_dino_by_name(db, dino_data.name)
 
         if existing_dino is not None and existing_dino.id != dino.id:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Ya existe un dino con ese slug",
+                detail="Ya existe un dino con ese nombre",
             )
 
     return dino_repo.update_dino(db, dino, dino_data)
@@ -140,6 +140,12 @@ def delete_dino(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Dino no encontrado",
+        )
+
+    if dino_repo.has_challenge_usage(db, dino.id):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="No se puede eliminar el dino porque esta usado en retos o eventos",
         )
 
     dino_repo.delete_dino(db, dino)

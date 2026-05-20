@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from src.core.security import get_current_admin
 from src.database.session import get_db
+from src.repositories import challenge_repository as challenge_repo
 from src.repositories import dino_map_repository as dino_map_repo
 from src.repositories import dino_repository as dino_repo
 from src.repositories import map_repository as map_repo
@@ -50,12 +51,12 @@ def create_map(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_admin),
 ) -> MapRead:
-    existing_map = map_repo.get_map_by_slug(db, map_data.slug)
+    existing_map = map_repo.get_map_by_name(db, map_data.name)
 
     if existing_map is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Ya existe un mapa con ese slug",
+            detail="Ya existe un mapa con ese nombre",
         )
 
     return map_repo.create_map(db, map_data)
@@ -75,13 +76,13 @@ def update_map(
             detail="Mapa no encontrado",
         )
 
-    if map_data.slug is not None:
-        existing_map = map_repo.get_map_by_slug(db, map_data.slug)
+    if map_data.name is not None:
+        existing_map = map_repo.get_map_by_name(db, map_data.name)
 
         if existing_map is not None and existing_map.id != map_item.id:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Ya existe un mapa con ese slug",
+                detail="Ya existe un mapa con ese nombre",
             )
 
     return map_repo.update_map(db, map_item, map_data)
@@ -217,6 +218,12 @@ def delete_map(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Mapa no encontrado",
+        )
+
+    if challenge_repo.has_challenges_for_map(db, map_id):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="No se puede eliminar el mapa porque tiene retos asociados",
         )
 
     map_repo.delete_map(db, map_item)
