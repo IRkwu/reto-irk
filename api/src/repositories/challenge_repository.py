@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
+from src.core.challenge_rules import calculate_initial_lives
 from src.models.challenge import Challenge, ChallengeStatus
 from src.schemas.challenge import ChallengeCreate, ChallengeUpdate
 
@@ -29,9 +30,23 @@ def list_challenges(
 
     return query.order_by(Challenge.created_at.desc()).offset(skip).limit(limit).all()
 
+def has_challenges_for_map(db: Session, map_id: int) -> bool:
+    return db.query(Challenge.id).filter(Challenge.map_id == map_id).first() is not None
+
+def has_challenges_for_spawn_zone(db: Session, spawn_zone_id: int) -> bool:
+    return (
+        db.query(Challenge.id)
+        .filter(Challenge.spawn_zone_id == spawn_zone_id)
+        .first()
+        is not None
+    )
+
 def create_challenge(db: Session, challenge_data: ChallengeCreate) -> Challenge:
     data = challenge_data.model_dump()
-    data["current_lives"] = data["player_count"] * data["base_lives_per_player"]
+    data["current_lives"] = calculate_initial_lives(
+        data["player_count"],
+        data["base_lives_per_player"],
+    )
 
     challenge = Challenge(**data)
     db.add(challenge)
@@ -52,7 +67,10 @@ def update_challenge(db: Session, challenge: Challenge, challenge_data: Challeng
 def start_challenge(db: Session, challenge: Challenge) -> Challenge:
     challenge.status = ChallengeStatus.active
     challenge.started_at = datetime.now(timezone.utc)
-    challenge.current_lives = challenge.player_count * challenge.base_lives_per_player
+    challenge.current_lives = calculate_initial_lives(
+        challenge.player_count,
+        challenge.base_lives_per_player,
+    )
 
     db.commit()
     db.refresh(challenge)
