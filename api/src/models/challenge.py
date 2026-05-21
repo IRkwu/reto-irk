@@ -4,7 +4,7 @@ from enum import StrEnum
 from sqlalchemy import Date, DateTime, Enum, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.core.challenge_rules import DEFAULT_BASE_LIVES_PER_PLAYER, DEFAULT_PLAYER_COUNT
+from src.core.challenge_rules import DEFAULT_PLAYER_COUNT
 from src.database.base import Base
 
 class ChallengeStatus(StrEnum):
