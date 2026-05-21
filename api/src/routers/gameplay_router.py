@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from src.core.security import get_current_admin
 from src.database.session import get_db
+from src.models.challenge import ChallengeStatus
 from src.models.challenge_event import ChallengeEventType
 from src.repositories import challenge_event_repository as event_repo
 from src.repositories import challenge_player_repository as player_repo
@@ -47,6 +48,13 @@ def _validate_optional_references(
             detail="Dino no encontrado",
         )
 
+def _ensure_active_challenge(challenge) -> None:
+    if challenge.status != ChallengeStatus.active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Solo se puede modificar gameplay mientras el desafio esta activo",
+        )
+
 @router.post("/challenges/{challenge_id}/lives/decrease", response_model=ChallengeRead)
 async def decrease_lives(
     challenge_id: int,
@@ -55,6 +63,7 @@ async def decrease_lives(
     current_user: dict = Depends(get_current_admin),
 ) -> ChallengeRead:
     challenge = _get_challenge_or_404(db, challenge_id)
+    _ensure_active_challenge(challenge)
     _validate_optional_references(
         db,
         challenge_id,
@@ -97,6 +106,7 @@ async def increase_lives(
     current_user: dict = Depends(get_current_admin),
 ) -> ChallengeRead:
     challenge = _get_challenge_or_404(db, challenge_id)
+    _ensure_active_challenge(challenge)
     _validate_optional_references(
         db,
         challenge_id,
@@ -165,7 +175,8 @@ async def create_challenge_event(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_admin),
 ) -> ChallengeEventRead:
-    _get_challenge_or_404(db, challenge_id)
+    challenge = _get_challenge_or_404(db, challenge_id)
+    _ensure_active_challenge(challenge)
 
     _validate_optional_references(
         db,

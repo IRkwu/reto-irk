@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from src.models.challenge_player import ChallengePlayer
 from src.schemas.challenge_player import ChallengePlayerCreate, ChallengePlayerUpdate
@@ -53,7 +53,14 @@ def list_challenge_players(
     challenge_id: int,
     is_active: bool | None = None,
 ) -> list[ChallengePlayer]:
-    query = db.query(ChallengePlayer).filter(ChallengePlayer.challenge_id == challenge_id)
+    query = (
+        db.query(ChallengePlayer)
+        .options(
+            selectinload(ChallengePlayer.player),
+            selectinload(ChallengePlayer.spawn_zone),
+        )
+        .filter(ChallengePlayer.challenge_id == challenge_id)
+    )
 
     if is_active is not None:
         query = query.filter(ChallengePlayer.is_active == is_active)
