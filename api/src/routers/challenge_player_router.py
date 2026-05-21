@@ -68,6 +68,23 @@ def _ensure_draft_challenge(challenge) -> None:
             detail="Solo se pueden editar jugadores mientras el desafio este en borrador",
         )
 
+def _ensure_player_update_allowed(challenge, player_data: ChallengePlayerUpdate) -> None:
+    if challenge.status == ChallengeStatus.draft:
+        return
+
+    if challenge.status != ChallengeStatus.active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se pueden editar jugadores de un desafio finalizado",
+        )
+
+    allowed_fields = {"spawn_zone_id"}
+    if not player_data.model_fields_set.issubset(allowed_fields):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="En un desafio activo solo se puede editar la zona de spawn",
+        )
+
 def _ensure_position_available(db: Session, challenge_id: int, position: int, current_id: int | None = None) -> None:
     existing_player = player_repo.get_challenge_player_by_position(
         db=db,
@@ -181,7 +198,7 @@ async def update_challenge_player(
     current_user: dict = Depends(get_current_admin),
 ) -> ChallengePlayerRead:
     challenge = _get_challenge_or_404(db, challenge_id)
-    _ensure_draft_challenge(challenge)
+    _ensure_player_update_allowed(challenge, player_data)
     player = _get_player_or_404(db, challenge_id, player_id)
 
     if player_data.position is not None:

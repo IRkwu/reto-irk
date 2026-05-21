@@ -30,11 +30,11 @@ def _get_challenge_or_404(db: Session, challenge_id: int):
 
     return challenge
 
-def _ensure_draft_challenge(challenge) -> None:
-    if challenge.status != ChallengeStatus.draft:
+def _ensure_editable_challenge(challenge) -> None:
+    if challenge.status not in (ChallengeStatus.draft, ChallengeStatus.active):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="La ruleta solo se puede usar mientras el desafio este en borrador",
+            detail="La ruleta solo se puede usar mientras el desafio esta en borrador o activo",
         )
 
 def _available_dinos(db: Session, challenge_id: int) -> list:
@@ -72,7 +72,7 @@ def roll_roulette_dino(
     current_user: dict = Depends(get_current_admin),
 ) -> RouletteRollRead:
     challenge = _get_challenge_or_404(db, challenge_id)
-    _ensure_draft_challenge(challenge)
+    _ensure_editable_challenge(challenge)
     dinos = _available_dinos(db, challenge_id)
 
     if not dinos:
@@ -91,7 +91,7 @@ async def create_assignment_from_roulette(
     current_user: dict = Depends(get_current_admin),
 ) -> RouletteAssignRead:
     challenge = _get_challenge_or_404(db, challenge_id)
-    _ensure_draft_challenge(challenge)
+    _ensure_editable_challenge(challenge)
 
     player_assignments = assignment_repo.list_assignments(
         db=db,

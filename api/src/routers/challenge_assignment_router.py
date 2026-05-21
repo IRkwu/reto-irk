@@ -47,11 +47,25 @@ def _get_assignment_or_404(db: Session, challenge_id: int, assignment_id: int):
 
     return assignment
 
-def _ensure_draft_challenge(challenge) -> None:
-    if challenge.status != ChallengeStatus.draft:
+def _ensure_editable_challenge(challenge) -> None:
+    if challenge.status not in (ChallengeStatus.draft, ChallengeStatus.active):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Solo se pueden editar asignaciones mientras el desafio este en borrador",
+            detail="Solo se pueden editar asignaciones mientras el desafio esta en borrador o activo",
+        )
+
+def _ensure_active_challenge(challenge) -> None:
+    if challenge.status != ChallengeStatus.active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Solo se pueden actualizar dinos mientras el desafio esta activo",
+        )
+
+def _ensure_assignment_not_completed(assignment) -> None:
+    if assignment.is_tamed:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No se puede editar un dino completado",
         )
 
 def _validate_player_and_dino(db: Session, challenge_id: int, player_id: int | None, dino_id: int) -> None:
@@ -143,7 +157,7 @@ async def create_assignment(
     current_user: dict = Depends(get_current_admin),
 ) -> ChallengeDinoAssignmentRead:
     challenge = _get_challenge_or_404(db, challenge_id)
-    _ensure_draft_challenge(challenge)
+    _ensure_editable_challenge(challenge)
 
     player_assignments = assignment_repo.list_assignments(
         db=db,
@@ -189,8 +203,9 @@ async def update_assignment(
     current_user: dict = Depends(get_current_admin),
 ) -> ChallengeDinoAssignmentRead:
     challenge = _get_challenge_or_404(db, challenge_id)
-    _ensure_draft_challenge(challenge)
+    _ensure_editable_challenge(challenge)
     assignment = _get_assignment_or_404(db, challenge_id, assignment_id)
+    _ensure_assignment_not_completed(assignment)
 
     if "player_id" in assignment_data.model_fields_set and assignment_data.player_id is None:
         raise HTTPException(
@@ -243,7 +258,9 @@ async def mark_assignment_tamed(
     current_user: dict = Depends(get_current_admin),
 ) -> ChallengeDinoAssignmentRead:
     challenge = _get_challenge_or_404(db, challenge_id)
+    _ensure_active_challenge(challenge)
     assignment = _get_assignment_or_404(db, challenge_id, assignment_id)
+    _ensure_assignment_not_completed(assignment)
     was_tamed = assignment.is_tamed
     tamed_by_player_id = tame_data.player_id if tame_data and tame_data.player_id is not None else assignment.player_id
 
@@ -282,7 +299,9 @@ async def mark_assignment_untamed(
     current_user: dict = Depends(get_current_admin),
 ) -> ChallengeDinoAssignmentRead:
     challenge = _get_challenge_or_404(db, challenge_id)
+    _ensure_active_challenge(challenge)
     assignment = _get_assignment_or_404(db, challenge_id, assignment_id)
+    _ensure_assignment_not_completed(assignment)
     was_tamed = assignment.is_tamed
     dino_id = assignment.dino_id
     player_id = assignment.tamed_by_player_id or assignment.player_id
@@ -311,8 +330,9 @@ async def delete_assignment(
     current_user: dict = Depends(get_current_admin),
 ) -> Response:
     challenge = _get_challenge_or_404(db, challenge_id)
-    _ensure_draft_challenge(challenge)
+    _ensure_editable_challenge(challenge)
     assignment = _get_assignment_or_404(db, challenge_id, assignment_id)
+    _ensure_assignment_not_completed(assignment)
     assignment_repo.delete_assignment(db, assignment)
     challenge_repo.sync_draft_lives_with_assignments(db, challenge)
     await websocket_manager.broadcast(challenge_id, {"type": "assignment_deleted", "challenge_id": challenge_id})
