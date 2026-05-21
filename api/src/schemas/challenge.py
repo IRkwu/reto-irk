@@ -4,10 +4,8 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.core.challenge_rules import (
-    DEFAULT_BASE_LIVES_PER_PLAYER,
     DEFAULT_PLAYER_COUNT,
     MAX_PLAYERS_PER_CHALLENGE,
-    MIN_BASE_LIVES_PER_PLAYER,
     MIN_PLAYERS_PER_CHALLENGE,
 )
 
@@ -22,10 +20,6 @@ class ChallengeCreate(BaseModel):
         ge=MIN_PLAYERS_PER_CHALLENGE,
         le=MAX_PLAYERS_PER_CHALLENGE,
     )
-    base_lives_per_player: int = Field(
-        default=DEFAULT_BASE_LIVES_PER_PLAYER,
-        ge=MIN_BASE_LIVES_PER_PLAYER,
-    )
 
 class ChallengeUpdate(BaseModel):
     name: str | None = None
@@ -37,10 +31,6 @@ class ChallengeUpdate(BaseModel):
         ge=MIN_PLAYERS_PER_CHALLENGE,
         le=MAX_PLAYERS_PER_CHALLENGE,
     )
-    base_lives_per_player: int | None = Field(
-        default=None,
-        ge=MIN_BASE_LIVES_PER_PLAYER,
-    )
     current_lives: int | None = None
 
 class ChallengeRead(BaseModel):
@@ -50,8 +40,9 @@ class ChallengeRead(BaseModel):
     spawn_zone_id: int | None
     status: ChallengeStatusValue
     player_count: int
-    base_lives_per_player: int
     current_lives: int
+    completed_dinos_count: int
+    total_dinos_count: int
     started_at: datetime | None
     completed_at: datetime | None
     created_at: date

@@ -22,7 +22,6 @@ class Challenge(Base):
     spawn_zone_id: Mapped[int | None] = mapped_column(ForeignKey("spawn_zones.id"), nullable=True, index=True)
     status: Mapped[ChallengeStatus] = mapped_column(Enum(ChallengeStatus), default=ChallengeStatus.draft, nullable=False, index=True)
     player_count: Mapped[int] = mapped_column(Integer, default=DEFAULT_PLAYER_COUNT, nullable=False)
-    base_lives_per_player: Mapped[int] = mapped_column(Integer, default=DEFAULT_BASE_LIVES_PER_PLAYER, nullable=False)
     current_lives: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -34,3 +33,11 @@ class Challenge(Base):
     players = relationship("ChallengePlayer", back_populates="challenge", cascade="all, delete-orphan")
     assignments = relationship("ChallengeDinoAssignment", back_populates="challenge", cascade="all, delete-orphan")
     events = relationship("ChallengeEvent", back_populates="challenge", cascade="all, delete-orphan")
+
+    @property
+    def completed_dinos_count(self) -> int:
+        return len([assignment for assignment in self.assignments if assignment.is_tamed])
+
+    @property
+    def total_dinos_count(self) -> int:
+        return len(self.assignments)

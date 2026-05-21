@@ -236,6 +236,7 @@ async def delete_challenge_player(
         player_id=player.id,
     )
     player_repo.delete_challenge_player(db, player)
+    challenge_repo.sync_draft_lives_with_assignments(db, challenge)
     await websocket_manager.broadcast(
         challenge_id,
         {

@@ -172,7 +172,7 @@ async def start_challenge(
             player_name = player.player.name if player.player else f"Jugador {player.position}"
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"{player_name} debe tener entre 5 y 20 dinos asignados",
+                detail=f"{player_name} debe tener entre {MIN_DINOS_PER_PLAYER} y {MAX_DINOS_PER_PLAYER} dinos asignados",
             )
 
     challenge = challenge_repo.start_challenge(db, challenge)

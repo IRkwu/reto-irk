@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from src.core.challenge_rules import calculate_initial_lives
 from src.database.session import get_db
 from src.models.challenge_event import ChallengeEventType
 from src.repositories import challenge_dino_assignment_repository as assignment_repo
@@ -65,10 +64,7 @@ def get_public_overlay(
                 "name": challenge.spawn_zone.name if challenge.spawn_zone else None,
             } if challenge.spawn_zone else None,
             "current_lives": challenge.current_lives,
-            "initial_lives": calculate_initial_lives(
-                challenge.player_count,
-                challenge.base_lives_per_player,
-            ),
+            "initial_lives": total_dinos,
             "completed_dinos_count": completed_dinos,
             "total_dinos_count": total_dinos,
             "recent_tamed_dinos": [_event_to_overlay_item(event) for event in recent_tame_events],

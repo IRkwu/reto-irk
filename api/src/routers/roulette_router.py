@@ -150,5 +150,6 @@ async def create_assignment_from_roulette(
             dino_id=roulette_data.dino_id,
         ),
     )
+    challenge_repo.sync_draft_lives_with_assignments(db, challenge)
     await websocket_manager.broadcast(challenge_id, {"type": "assignment_created", "challenge_id": challenge_id})
     return RouletteAssignRead(assignment=assignment)

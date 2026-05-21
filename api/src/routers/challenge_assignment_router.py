@@ -176,6 +176,7 @@ async def create_assignment(
             **assignment_data.model_dump(),
         ),
     )
+    challenge_repo.sync_draft_lives_with_assignments(db, challenge)
     await websocket_manager.broadcast(challenge_id, {"type": "assignment_created", "challenge_id": challenge_id})
     return assignment
 
@@ -313,5 +314,6 @@ async def delete_assignment(
     _ensure_draft_challenge(challenge)
     assignment = _get_assignment_or_404(db, challenge_id, assignment_id)
     assignment_repo.delete_assignment(db, assignment)
+    challenge_repo.sync_draft_lives_with_assignments(db, challenge)
     await websocket_manager.broadcast(challenge_id, {"type": "assignment_deleted", "challenge_id": challenge_id})
     return Response(status_code=status.HTTP_204_NO_CONTENT)

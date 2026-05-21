@@ -1,9 +1,10 @@
 from datetime import datetime, timezone
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from src.core.challenge_rules import calculate_initial_lives
 from src.models.challenge import Challenge, ChallengeStatus
+from src.repositories import challenge_dino_assignment_repository as assignment_repo
 from src.schemas.challenge import ChallengeCreate, ChallengeUpdate
 
 def get_challenge(db: Session, challenge_id: int) -> Challenge | None:
@@ -17,7 +18,7 @@ def list_challenges(
     map_id: int | None = None,
     spawn_zone_id: int | None = None,
 ) -> list[Challenge]:
-    query = db.query(Challenge)
+    query = db.query(Challenge).options(selectinload(Challenge.assignments))
 
     if status is not None:
         query = query.filter(Challenge.status == status)
@@ -43,10 +44,7 @@ def has_challenges_for_spawn_zone(db: Session, spawn_zone_id: int) -> bool:
 
 def create_challenge(db: Session, challenge_data: ChallengeCreate) -> Challenge:
     data = challenge_data.model_dump()
-    data["current_lives"] = calculate_initial_lives(
-        data["player_count"],
-        data["base_lives_per_player"],
-    )
+    data["current_lives"] = 0
 
     challenge = Challenge(**data)
     db.add(challenge)
@@ -65,13 +63,22 @@ def update_challenge(db: Session, challenge: Challenge, challenge_data: Challeng
     return challenge
 
 def start_challenge(db: Session, challenge: Challenge) -> Challenge:
+    total_dinos = len(assignment_repo.list_assignments(db, challenge.id))
+
     challenge.status = ChallengeStatus.active
     challenge.started_at = datetime.now(timezone.utc)
-    challenge.current_lives = calculate_initial_lives(
-        challenge.player_count,
-        challenge.base_lives_per_player,
-    )
+    challenge.current_lives = calculate_initial_lives(total_dinos)
 
+    db.commit()
+    db.refresh(challenge)
+    return challenge
+
+def sync_draft_lives_with_assignments(db: Session, challenge: Challenge) -> Challenge:
+    if challenge.status != ChallengeStatus.draft:
+        return challenge
+
+    total_dinos = len(assignment_repo.list_assignments(db, challenge.id))
+    challenge.current_lives = calculate_initial_lives(total_dinos)
     db.commit()
     db.refresh(challenge)
     return challenge
