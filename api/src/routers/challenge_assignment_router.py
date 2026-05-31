@@ -301,7 +301,6 @@ async def mark_assignment_untamed(
     challenge = _get_challenge_or_404(db, challenge_id)
     _ensure_active_challenge(challenge)
     assignment = _get_assignment_or_404(db, challenge_id, assignment_id)
-    _ensure_assignment_not_completed(assignment)
     was_tamed = assignment.is_tamed
     dino_id = assignment.dino_id
     player_id = assignment.tamed_by_player_id or assignment.player_id
