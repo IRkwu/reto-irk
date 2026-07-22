@@ -10,6 +10,7 @@ from src.models.map import Map
 from src.models.spawn_zone import SpawnZone
 
 ASSET_IMAGE_EXTENSION = ".webp"
+MAP_GAME_VALUES = {"ark_survival_evolved", "ark_survival_ascended"}
 
 def _read_csv_rows(path: Path, required_columns: set[str]) -> list[dict[str, str]]:
     if not path.exists():
@@ -58,6 +59,7 @@ def _should_replace_dino_name(current_name: str, candidate_name: str) -> bool:
 def _get_or_create_map(
     db: Session,
     map_name: str,
+    game: str,
     image_url: str | None = None,
 ) -> tuple[Map, bool, bool]:
     map_key = _name_key(map_name)
@@ -80,10 +82,15 @@ def _get_or_create_map(
             map_item.image_url = image_url
             updated = True
 
+        if game and map_item.game != game:
+            map_item.game = game
+            updated = True
+
         return map_item, False, updated
 
     map_item = Map(
         name=map_name,
+        game=game,
         image_url=image_url,
         is_active=True,
     )
@@ -212,10 +219,19 @@ def import_ark_catalog(
     map_dinos_path = data_path / "map_dinos.csv"
     spawn_zones_path = data_path / "spawn_zones.csv"
 
-    map_rows = _read_csv_rows(maps_path, {"map_name"})
+    map_rows = _read_csv_rows(maps_path, {"map_name", "game"})
     dino_rows = _read_csv_rows(dinos_path, {"dino_name", "game"})
     map_dino_rows = _read_csv_rows(map_dinos_path, {"map_name", "dino_name"})
     spawn_zone_rows = _read_csv_rows(spawn_zones_path, {"map_name", "zone_name"})
+
+    invalid_map_rows = [
+        row["map_name"] or "<sin nombre>"
+        for row in map_rows
+        if row["game"] not in MAP_GAME_VALUES
+    ]
+    if invalid_map_rows:
+        invalid_maps = ", ".join(invalid_map_rows)
+        raise ValueError(f"Mapas con game ausente o no admitido: {invalid_maps}")
 
     stats = {
         "created_dinos": 0,
@@ -239,10 +255,12 @@ def import_ark_catalog(
         if not map_name:
             continue
 
+        map_game = row["game"]
         map_image_url = _public_asset_url("maps", map_name)
         map_item, map_created, map_updated = _get_or_create_map(
             db,
             map_name,
+            game=map_game,
             image_url=map_image_url,
         )
         maps_by_key[_name_key(map_name)] = map_item

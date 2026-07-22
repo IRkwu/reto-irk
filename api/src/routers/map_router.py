@@ -8,7 +8,7 @@ from src.repositories import dino_map_repository as dino_map_repo
 from src.repositories import dino_repository as dino_repo
 from src.repositories import map_repository as map_repo
 from src.schemas.dino_map import DinoMapRead
-from src.schemas.map import MapCreate, MapRead, MapUpdate
+from src.schemas.map import MapCreate, MapGame, MapRead, MapUpdate
 
 router = APIRouter(prefix="/maps", tags=["maps"])
 
@@ -18,6 +18,7 @@ def list_maps(
     limit: int = Query(100, ge=1, le=200),
     is_active: bool | None = None,
     search: str | None = None,
+    game: MapGame | None = None,
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_admin),
 ) -> list[MapRead]:
@@ -27,6 +28,7 @@ def list_maps(
         limit=limit,
         is_active=is_active,
         search=search,
+        game=game,
     )
 
 @router.get("/{map_id}", response_model=MapRead)

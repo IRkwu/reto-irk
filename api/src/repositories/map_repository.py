@@ -2,7 +2,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from src.models.map import Map
-from src.schemas.map import MapCreate, MapUpdate
+from src.schemas.map import MapCreate, MapGame, MapUpdate
 
 def get_map(db: Session, map_id: int) -> Map | None:
     return db.query(Map).filter(Map.id == map_id).one_or_none()
@@ -17,11 +17,15 @@ def list_maps(
     limit: int = 100,
     is_active: bool | None = None,
     search: str | None = None,
+    game: MapGame | None = None,
 ) -> list[Map]:
     query = db.query(Map)
 
     if is_active is not None:
         query = query.filter(Map.is_active == is_active)
+
+    if game:
+        query = query.filter(Map.game == game)
 
     if search:
         query = query.filter(Map.name.ilike(f"%{search}%"))

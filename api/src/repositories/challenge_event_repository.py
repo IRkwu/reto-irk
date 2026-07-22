@@ -25,7 +25,7 @@ def list_challenge_events(
     if dino_id is not None:
         query = query.filter(ChallengeEvent.dino_id == dino_id)
 
-    return query.order_by(ChallengeEvent.created_at.desc()).offset(skip).limit(limit).all()
+    return query.order_by(ChallengeEvent.created_at.desc(), ChallengeEvent.id.desc()).offset(skip).limit(limit).all()
 
 def create_challenge_event(
     db: Session,
