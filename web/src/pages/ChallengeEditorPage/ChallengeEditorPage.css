@@ -1,0 +1,257 @@
+.editor-summary-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 180px);
+  gap: 10px;
+  align-items: end;
+  margin-top: 12px;
+}
+.editor-summary-form.read-only {
+  grid-template-columns: 1fr;
+}
+.editor-shell {
+  display: grid;
+  gap: 14px;
+}
+
+html:not([data-density="compact"]) .container:has(.editor-shell) {
+  width: min(1280px, calc(100vw - 72px));
+  padding-inline: 0;
+}
+
+.editor-shell .btn {
+  border-color: var(--line-hover);
+  background: var(--control);
+  color: var(--text-strong);
+  text-shadow: none;
+}
+.editor-shell .btn:hover {
+  background: var(--control-hover);
+  border-color: var(--line-hover);
+  filter: none;
+}
+.editor-shell .btn.ghost {
+  border-color: var(--line-hover);
+  background: var(--control);
+  color: var(--text-strong);
+}
+.editor-shell .btn.danger {
+  border-color: var(--danger-border);
+  background: var(--danger-control-bg);
+  color: var(--danger-control-text);
+}
+.editor-cancel-button {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  padding: 0;
+  justify-content: center;
+}
+.editor-config-card {
+  border-color: var(--line-strong);
+  background: var(--panel-soft);
+  color: var(--text-strong);
+}
+
+html:not([data-density="compact"]) .editor-config-card,
+html:not([data-density="compact"]) .editor-player-card {
+  padding: 16px;
+}
+
+html:not([data-density="compact"]) .editor-config-card {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--panel-soft) 94%, var(--control) 6%), var(--panel-soft));
+}
+
+html:not([data-density="compact"]) .editor-config-card .section-head {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.editor-config-card .muted {
+  color: var(--muted);
+}
+.editor-config-card input {
+  border-color: var(--line-strong);
+  background: var(--control);
+  color: var(--text-strong);
+}
+.editor-config-card input:focus,
+.editor-player-card select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, .16);
+}
+.editor-player-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(500px, 100%), 1fr));
+  gap: 14px;
+}
+.editor-player-card {
+  display: grid;
+  gap: 14px;
+  border-color: var(--line-strong);
+  background: var(--panel-soft);
+  color: var(--text-strong);
+}
+
+html:not([data-density="compact"]) .editor-player-card {
+  gap: 14px;
+}
+
+html:not([data-density="compact"]) .editor-player-head {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+html:not([data-density="compact"]) .editor-player-controls {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--control-soft);
+}
+
+html:not([data-density="compact"]) .editor-player-card .challenge-dino-card-grid {
+  margin-top: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--control-soft);
+}
+
+.editor-player-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.editor-player-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(96px, 120px);
+  gap: 10px;
+  align-items: end;
+}
+.editor-player-controls > label > span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.editor-player-controls .picker-button,
+.editor-player-controls > .btn {
+  height: 46px;
+  min-height: 46px;
+}
+.editor-player-card .h2 {
+  color: var(--text-strong);
+}
+.player-spawn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+.player-spawn-chip svg {
+  color: var(--accent);
+}
+.editor-player-card select {
+  border-color: var(--line-strong);
+  background: var(--control);
+  color: var(--text-strong);
+}
+.editor-player-card .btn.ghost {
+  border-color: var(--line-hover);
+  background: var(--control);
+  color: var(--text-strong);
+}
+.editor-player-card .target-tile {
+  min-width: 0;
+}
+@media (max-width: 960px) {
+  html:not([data-density="compact"]) .container:has(.editor-shell) {
+    width: min(100%, calc(100vw - 24px));
+    padding-inline: 0;
+  }
+  .editor-player-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .editor-player-controls > .btn {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .editor-config-card .section-head {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  .editor-config-card .section-head > :first-child {
+    min-width: 0;
+    padding-right: 126px;
+  }
+  .editor-config-card .section-head > .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 42px;
+    width: 100%;
+    min-height: 42px;
+    margin-top: 14px;
+    gap: 8px;
+  }
+  .editor-config-card .section-head > .row > * {
+    width: 100%;
+    min-width: 0;
+  }
+  .editor-config-card .section-head > .row > :first-child {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    width: auto;
+    max-width: 118px;
+  }
+  .editor-config-card .section-head > .row .btn {
+    padding-inline: 8px;
+  }
+  .editor-start-button {
+    grid-column: 1;
+  }
+  .editor-config-card .editor-cancel-button {
+    grid-column: 2;
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
+    flex: 0 0 42px;
+  }
+  .editor-summary-form {
+    grid-template-columns: 1fr;
+  }
+  .editor-player-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+}
+
+@media (max-width: 520px) {
+  .editor-player-controls {
+    grid-template-columns: 1fr;
+  }
+  .editor-player-head {
+    grid-template-columns: 1fr;
+  }
+  .editor-config-card .section-head > :first-child {
+    padding-right: 112px;
+  }
+  .editor-config-card .section-head > .row {
+    margin-top: 12px;
+  }
+  .editor-cancel-button {
+    width: 42px;
+    min-width: 42px;
+  }
+}

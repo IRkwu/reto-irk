@@ -1,0 +1,350 @@
+.dinos-admin-shell {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.container:has(.dinos-admin-shell) {
+  width: min(1440px, 92vw);
+  padding-inline: 18px;
+}
+.dinos-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dinos-page-actions .btn {
+  border-color: var(--line-hover);
+  background: var(--control);
+  color: var(--text-strong);
+  text-shadow: none;
+}
+.dinos-page-actions .btn:hover {
+  border-color: var(--line-hover);
+  background: var(--control-hover);
+  filter: none;
+}
+.dinos-admin-shell .btn,
+.dino-admin-modal .btn {
+  border-color: var(--line-hover);
+  background: var(--control);
+  color: var(--text-strong);
+  text-shadow: none;
+}
+.dinos-admin-shell .btn:hover,
+.dino-admin-modal .btn:hover {
+  border-color: var(--line-hover);
+  background: var(--control-hover);
+  filter: none;
+}
+.dinos-admin-shell .btn.ghost,
+.dino-admin-modal .btn.ghost {
+  border-color: var(--line-hover);
+  background: var(--control-soft);
+  color: var(--text-strong);
+}
+.dinos-admin-shell .btn.danger {
+  border-color: var(--danger-border);
+  background: var(--danger-control-bg);
+  color: var(--danger-control-text);
+}
+.dinos-admin-hero,
+.dino-admin-card {
+  border-color: var(--line-strong);
+  background: var(--panel-soft);
+  color: var(--text-strong);
+  box-shadow: none;
+}
+.dinos-admin-head {
+  align-items: flex-start;
+}
+.dinos-admin-head > div {
+  min-width: 0;
+}
+.dinos-admin-head .muted {
+  color: var(--muted);
+}
+.dinos-admin-summary {
+  min-width: 96px;
+  padding: 9px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--control);
+  text-align: right;
+}
+.dinos-admin-summary span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.dinos-admin-summary b {
+  display: block;
+  color: var(--text-strong);
+  font-size: 22px;
+  line-height: 1.1;
+}
+.dinos-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr));
+  gap: 12px;
+}
+.dino-admin-card {
+  display: grid;
+  grid-template-columns: clamp(96px, 27vw, 120px) minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+}
+.dino-admin-image {
+  width: 100%;
+  aspect-ratio: 1;
+  grid-row: 1 / 3;
+  align-self: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--control);
+  object-fit: contain;
+  padding: 4px;
+}
+img.dino-admin-image {
+  object-position: center;
+}
+.dino-admin-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+.dino-admin-body {
+  min-width: 0;
+  align-self: end;
+}
+.dino-admin-body .h2 {
+  color: var(--text-strong);
+  font-size: 17px;
+  line-height: 1.15;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.dino-admin-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+}
+.dino-admin-meta span {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--control);
+}
+.dino-admin-actions {
+  grid-column: 2;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  align-self: start;
+  display: flex;
+  gap: 7px;
+  width: auto;
+}
+.dino-admin-actions.hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+.dino-admin-actions .btn {
+  width: 42px;
+  min-width: 42px;
+  min-height: 40px;
+  padding: 0;
+  flex: 0 0 auto;
+}
+.dino-admin-modal {
+  width: min(720px, 96vw);
+}
+.dino-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.game-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.game-choice-card {
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--control);
+  color: var(--text-strong);
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+}
+.game-choice-card span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.game-choice-card svg {
+  color: var(--accent);
+  flex: 0 0 auto;
+}
+.game-choice-card:hover,
+.game-choice-card.selected {
+  border-color: var(--accent);
+  background: rgba(125, 211, 252, .1);
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, .14);
+}
+.dino-admin-modal input {
+  border-color: var(--line-strong);
+  background: var(--control);
+  color: var(--text-strong);
+}
+.dino-admin-modal input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, .16);
+  outline: none;
+}
+
+
+@media (max-width: 960px) {
+  .game-choice-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1240px) {
+  .container:has(.dinos-admin-shell) {
+    padding-inline: 0;
+  }
+  .dinos-admin-shell {
+    gap: 12px;
+  }
+  .dinos-admin-head {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  .dinos-admin-head .dashboard-widgets {
+    width: 100%;
+  }
+  .dinos-admin-summary {
+    text-align: left;
+  }
+  .dinos-admin-shell .search-filter-bar,
+  .dinos-admin-shell .search-filter-bar:has(.search-filter-actions) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .dinos-admin-shell .search-filter-actions {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+  .dinos-admin-shell .search-filter-actions .btn {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .dinos-admin-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .container:has(.dinos-admin-shell) {
+    padding-inline: 0;
+  }
+  .dinos-admin-shell {
+    gap: 10px;
+  }
+  .dinos-admin-head {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  .dinos-admin-summary {
+    text-align: left;
+  }
+  .dino-modal-grid {
+    grid-template-columns: 1fr;
+  }
+  .dinos-admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 660px) {
+  .container:has(.dinos-admin-shell) {
+    padding-inline: 0;
+  }
+  .dinos-page-actions {
+    width: 100%;
+  }
+  .dinos-page-actions .btn {
+    width: 100%;
+  }
+  .dino-admin-card {
+    grid-template-columns: 100px minmax(0, 1fr);
+    gap: 9px;
+  }
+  .dino-admin-actions {
+    grid-column: 2;
+    display: flex;
+    justify-content: flex-start;
+  }
+  .dino-admin-actions .btn {
+    width: 42px;
+    min-width: 42px;
+  }
+  .dino-admin-modal {
+    gap: 14px;
+  }
+  .game-choice-card {
+    min-height: 58px;
+    padding: 10px;
+  }
+  .dinos-admin-shell .search-filter-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .dinos-admin-shell .search-filter-actions .btn:first-child {
+    grid-column: 1 / -1;
+  }
+  .dinos-admin-shell .search-filter-actions .btn {
+    width: 100%;
+    padding-inline: 8px;
+    min-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 380px) {
+  .dino-admin-card {
+    grid-template-columns: 90px minmax(0, 1fr);
+  }
+  .dinos-admin-shell .search-filter-actions {
+    display: grid;
+    gap: 5px;
+  }
+  .dinos-admin-shell .search-filter-actions .btn {
+    padding-inline: 6px;
+  }
+}

@@ -1,0 +1,23 @@
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-mark { display: flex; align-items: center; gap: 10px; color: var(--green); margin-bottom: 12px; }
+.sep, .title, .muted { color: var(--muted); }
+.title { font-weight: 700; }
+.authcard { width: min(460px, 100%); }
+
+@media (max-width: 520px) {
+  .authcard {
+    width: 100%;
+  }
+  .brand-mark {
+    align-items: flex-start;
+  }
+}

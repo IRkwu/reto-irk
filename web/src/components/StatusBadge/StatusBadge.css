@@ -1,0 +1,26 @@
+.status-badge {
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.status-badge.active {
+  background: var(--info-bg);
+  color: var(--info-text);
+  border-color: var(--info-border);
+}
+.status-badge.completed {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-color: var(--success-border);
+}
+.status-badge.draft {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-color: var(--warning-border);
+}
+.status-badge.cancelled {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-color: var(--danger-border);
+}

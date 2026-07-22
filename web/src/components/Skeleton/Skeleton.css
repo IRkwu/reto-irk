@@ -1,0 +1,347 @@
+.skeleton-page {
+  display: grid;
+  gap: 14px;
+}
+
+.skeleton-card {
+  border-color: var(--line-strong);
+  background: var(--panel-soft);
+  box-shadow: none;
+}
+
+.skeleton-line,
+.skeleton-block {
+  display: block;
+  border-radius: 8px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--control-soft),
+      var(--control-hover),
+      var(--control-soft)
+    );
+  background-size: 220% 100%;
+  animation: skeleton-shimmer 1.35s ease-in-out infinite;
+}
+
+.skeleton-line {
+  width: var(--skeleton-width);
+  max-width: 100%;
+  height: 12px;
+}
+
+.skeleton-line.title {
+  height: 20px;
+}
+
+.skeleton-line.input {
+  height: 42px;
+}
+
+.skeleton-line.hero-number {
+  height: 44px;
+}
+
+.skeleton-block {
+  min-height: 40px;
+}
+
+.skeleton-copy {
+  min-width: 0;
+  display: grid;
+  gap: 9px;
+  align-content: start;
+}
+
+.skeleton-hero,
+.skeleton-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.skeleton-hero {
+  align-items: flex-start;
+}
+
+.skeleton-widget-row,
+.skeleton-action-row,
+.skeleton-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.skeleton-widget {
+  width: 92px;
+  height: 54px;
+}
+
+.skeleton-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.skeleton-filter-row .skeleton-block {
+  width: 88px;
+}
+
+.skeleton-challenge-card,
+.skeleton-dino-card,
+.skeleton-player-card,
+.skeleton-play-player,
+.skeleton-editor-config,
+.skeleton-events-card,
+.skeleton-lives-card {
+  display: grid;
+  gap: 12px;
+}
+
+.skeleton-pill {
+  width: 84px;
+  height: 30px;
+  min-height: 30px;
+}
+
+.skeleton-metric-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.skeleton-metric-row .skeleton-block {
+  min-height: 62px;
+}
+
+.skeleton-action-row .skeleton-block {
+  width: 92px;
+  min-height: 40px;
+}
+
+.skeleton-action-row.compact .skeleton-block {
+  width: 42px;
+}
+
+.skeleton-dino-card {
+  grid-template-columns: clamp(96px, 27vw, 120px) minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+}
+
+.skeleton-dino-card .skeleton-action-row {
+  grid-column: 2;
+  align-self: start;
+  gap: 7px;
+}
+
+.skeleton-dino-card .skeleton-copy {
+  align-self: end;
+  gap: 7px;
+}
+
+.skeleton-dino-card .skeleton-line.title {
+  height: 17px;
+}
+
+.skeleton-dino-card .skeleton-line:not(.title) {
+  height: 24px;
+  border-radius: 999px;
+}
+
+.skeleton-dino-card .skeleton-action-row .skeleton-block {
+  width: 42px;
+  min-height: 40px;
+}
+
+.skeleton-image,
+.skeleton-map-image {
+  aspect-ratio: 1;
+}
+
+.skeleton-dino-card .skeleton-image {
+  grid-row: 1 / 3;
+  align-self: center;
+}
+
+.skeleton-map-card {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.skeleton-map-card .skeleton-line.pill {
+  height: 24px;
+  border-radius: 999px;
+}
+
+.skeleton-map-image {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.skeleton-avatar {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+
+.skeleton-stat-grid,
+.skeleton-mini-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.skeleton-stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.skeleton-stat-grid .skeleton-block {
+  min-height: 56px;
+}
+
+.skeleton-lives-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.skeleton-play-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.skeleton-mini-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.skeleton-mini-grid .skeleton-block {
+  aspect-ratio: 1;
+  min-height: 0;
+}
+
+.skeleton-editor-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.skeleton-event-row {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 58px;
+  padding: 9px 10px;
+  border: 1px solid var(--line-strong);
+  border-left-width: 4px;
+  border-radius: 8px;
+  background: var(--control);
+}
+
+.skeleton-event-icon {
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+}
+
+.skeleton-detail-block {
+  min-height: 180px;
+  margin-top: 12px;
+}
+
+.skeleton-overlay {
+  background: transparent;
+}
+
+.skeleton-obs-panel {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  width: 280px;
+  height: 84px;
+}
+
+.skeleton-obs-lives {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 160px;
+  height: 92px;
+}
+
+.skeleton-obs-progress {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  width: 180px;
+  height: 48px;
+}
+
+.skeleton-obs-toasts {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  display: grid;
+  gap: 8px;
+  width: 300px;
+}
+
+.skeleton-obs-toasts .skeleton-block {
+  min-height: 54px;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (max-width: 960px) {
+  .skeleton-play-grid {
+    grid-template-columns: 1fr;
+  }
+  .skeleton-stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .skeleton-hero,
+  .skeleton-lives-card,
+  .skeleton-search {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+  .skeleton-filter-row .skeleton-block {
+    flex: 1 1 0;
+    width: auto;
+  }
+  .skeleton-dino-card {
+    grid-template-columns: 100px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .skeleton-stat-grid,
+  .skeleton-mini-grid,
+  .skeleton-editor-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .skeleton-event-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+  .skeleton-event-row .skeleton-pill {
+    grid-column: 2;
+  }
+}

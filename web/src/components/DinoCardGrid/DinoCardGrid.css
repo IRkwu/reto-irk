@@ -1,0 +1,64 @@
+.dino-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 136px));
+  justify-content: start;
+  align-items: start;
+  align-content: start;
+  gap: 8px;
+  margin-top: 10px;
+}
+.dino-card-grid.challenge-dino-card-grid {
+  --challenge-dino-card-size: clamp(128px, 9vw, 136px);
+  --challenge-dino-gap: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--challenge-dino-gap);
+  width: 100%;
+  margin-inline: auto;
+}
+.dino-card-grid.challenge-dino-card-grid .target-tile {
+  flex: 0 0 var(--challenge-dino-card-size);
+  width: var(--challenge-dino-card-size);
+}
+.dino-card-grid .target-tile {
+  border-color: var(--line-strong);
+  background: var(--control);
+}
+.dino-card-grid .target-tile:hover {
+  border-color: var(--line-hover);
+  background: var(--control-hover);
+}
+.dino-card-grid .target-tile.done {
+  border-color: var(--accent);
+  background: rgba(125, 211, 252, .12);
+}
+.dino-card-grid .tile-imgwrap {
+  border-color: var(--line-strong);
+  background: var(--control-soft);
+}
+
+@media (max-width: 520px) {
+  .dino-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: stretch;
+    gap: 7px;
+  }
+  .dino-card-grid.challenge-dino-card-grid {
+    --challenge-dino-card-size: clamp(128px, 9vw, 136px);
+    --challenge-dino-gap: 12px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .dino-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dino-card-grid.challenge-dino-card-grid {
+    --challenge-dino-card-size: clamp(112px, calc((100vw - 62px) / 2), 124px);
+    --challenge-dino-gap: 10px;
+    justify-content: center;
+  }
+}

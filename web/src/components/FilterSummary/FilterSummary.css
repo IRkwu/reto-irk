@@ -1,0 +1,37 @@
+.filter-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.filter-summary-chip,
+.filter-summary-clear {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--control-soft);
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.filter-summary-chip b {
+  color: var(--muted);
+}
+
+.filter-summary-clear {
+  cursor: pointer;
+  background: var(--control);
+  color: var(--text-strong);
+}
+
+.filter-summary-clear:hover {
+  border-color: var(--accent);
+  background: var(--control-hover);
+}

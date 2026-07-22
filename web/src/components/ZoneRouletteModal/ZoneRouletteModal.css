@@ -1,0 +1,81 @@
+.zone-roulette-modal {
+  width: min(860px, 96vw);
+  max-width: 860px;
+}
+.zone-random-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  min-height: 250px;
+  margin: 20px 0 16px;
+  padding: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 42%),
+    var(--surface-deep);
+}
+.zone-random-card {
+  min-width: 0;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--control) 88%, var(--surface-deep));
+  color: var(--text-soft);
+  font-weight: 800;
+  overflow: hidden;
+  transition:
+    transform .12s ease,
+    opacity .12s ease,
+    border-color .12s ease,
+    background .12s ease,
+    box-shadow .12s ease;
+}
+.zone-random-card svg {
+  flex: 0 0 auto;
+  color: var(--accent);
+}
+.zone-random-card span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  line-height: 1.25;
+}
+.zone-random-card.active {
+  transform: translateY(-2px) scale(1.03);
+  opacity: 1;
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--control));
+  color: var(--text-strong);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent),
+    0 12px 30px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+.zone-random-card.winner {
+  transform: translateY(-2px) scale(1.04);
+  border-color: var(--green);
+  background: color-mix(in srgb, var(--green) 22%, var(--control));
+  color: var(--text-strong);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--green) 42%, transparent),
+    0 16px 34px color-mix(in srgb, var(--green) 18%, transparent);
+}
+
+@media (max-width: 700px) {
+  .zone-random-board {
+    grid-template-columns: 1fr;
+    max-height: 300px;
+    overflow: auto;
+  }
+  .zone-roulette-modal .row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .zone-roulette-modal .row .btn {
+    width: 100%;
+  }
+}

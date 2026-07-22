@@ -1,0 +1,98 @@
+.search-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border-color: var(--line-strong);
+  background: var(--panel-soft);
+  box-shadow: none;
+}
+.search-filter-bar:has(.search-filter-actions) {
+  grid-template-columns: minmax(240px, 1fr) auto auto;
+}
+.search-filter-field {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--control);
+  color: var(--accent);
+}
+.search-filter-field input {
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-strong);
+  outline: none;
+}
+.search-filter-field input::placeholder {
+  color: var(--muted);
+}
+.search-filter-field:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, .16);
+}
+.search-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.search-filter-actions .btn {
+  min-height: 38px;
+}
+.search-filter-actions .btn.ghost.selected,
+.search-filter-actions .btn[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+  box-shadow: none;
+  filter: none;
+}
+.search-filter-actions .btn.ghost.selected:hover,
+.search-filter-actions .btn[aria-pressed="true"]:hover {
+  background: color-mix(in srgb, var(--accent) 86%, var(--control-hover) 14%);
+  color: var(--accent-text);
+  filter: none;
+}
+.search-filter-label-mobile {
+  display: none;
+}
+
+@media (max-width: 840px) {
+  .search-filter-bar,
+  .search-filter-bar:has(.search-filter-actions) {
+    grid-template-columns: 1fr;
+  }
+  .search-filter-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .search-filter-bar {
+    padding: 10px;
+  }
+  .search-filter-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+  .search-filter-actions .btn {
+    width: 100%;
+    padding-inline: 8px;
+  }
+  .search-filter-label-full {
+    display: none;
+  }
+  .search-filter-label-mobile {
+    display: inline;
+  }
+}

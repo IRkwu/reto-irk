@@ -1,0 +1,16 @@
+.game-badge {
+  background: color-mix(in srgb, var(--control) 88%, var(--accent) 12%);
+  color: var(--text-soft);
+}
+
+.game-badge.ark_survival_evolved {
+  border-color: var(--info-border);
+  background: color-mix(in srgb, var(--control) 76%, var(--info-bg) 24%);
+  color: var(--info-text);
+}
+
+.game-badge.ark_survival_ascended {
+  border-color: var(--success-border);
+  background: color-mix(in srgb, var(--control) 78%, var(--success-bg) 22%);
+  color: var(--success-text);
+}

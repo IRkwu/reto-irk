@@ -1,0 +1,72 @@
+.notification-viewport {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  z-index: 1200;
+  width: min(680px, calc(100vw - 28px));
+  display: grid;
+  gap: 10px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.notification-toast {
+  position: relative;
+  min-height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+  padding: 15px 18px 18px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 88%, var(--accent));
+  color: var(--text-strong);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .34);
+}
+
+.notification-toast svg {
+  flex: 0 0 auto;
+  color: var(--notification-accent, var(--accent));
+}
+
+.notification-toast.success {
+  --notification-accent: var(--success-text);
+  border-color: var(--success-border);
+  background: color-mix(in srgb, var(--panel) 84%, var(--success-bg));
+}
+
+.notification-toast.info {
+  --notification-accent: var(--accent);
+}
+
+.notification-toast.error {
+  --notification-accent: var(--danger-text);
+  border-color: var(--danger-border);
+  background: color-mix(in srgb, var(--panel) 84%, var(--danger-bg));
+}
+
+.notification-timer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: var(--notification-accent, var(--accent));
+  transform-origin: left center;
+  animation: notification-timer var(--notification-duration, 5000ms) linear forwards;
+}
+
+@keyframes notification-timer {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}

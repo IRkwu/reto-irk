@@ -1,0 +1,26 @@
+.admin-edit-banner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--control-soft);
+  color: var(--text-strong);
+}
+
+.admin-edit-banner svg {
+  color: var(--accent);
+}
+
+.admin-edit-banner b,
+.admin-edit-banner span {
+  display: block;
+}
+
+.admin-edit-banner span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 13px;
+}

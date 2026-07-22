@@ -1,0 +1,340 @@
+.overlay-config-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(360px, 420px) minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.overlay-config-sidebar,
+.overlay-preview-panel {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.overlay-config-sidebar {
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding-right: 4px;
+  scrollbar-color: var(--line-hover) var(--bg);
+  scrollbar-width: thin;
+}
+
+.overlay-config-head,
+.overlay-preview-head,
+.overlay-url-card,
+.overlay-widget-control {
+  padding: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel-soft);
+  box-shadow: var(--shadow);
+}
+
+.overlay-config-head,
+.overlay-preview-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.overlay-config-head-actions {
+  display: grid;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.overlay-config-head-actions .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.overlay-config-head p,
+.overlay-preview-head p {
+  margin: 0;
+}
+
+.overlay-url-card {
+  display: grid;
+  gap: 10px;
+}
+
+.overlay-resolution-card {
+  display: grid;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.overlay-scale-summary {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.overlay-url-card input {
+  border-color: var(--line-strong);
+  background: var(--control);
+  color: var(--text-strong);
+}
+
+.overlay-widget-settings {
+  display: grid;
+  gap: 12px;
+}
+
+.overlay-widget-control {
+  display: grid;
+  gap: 12px;
+}
+
+.overlay-config-page .settings-toggle {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--control);
+  color: var(--text-strong);
+  font-weight: 850;
+}
+
+.overlay-config-page .settings-toggle input {
+  width: 18px;
+  min-height: 18px;
+  accent-color: var(--accent);
+  flex: 0 0 auto;
+}
+
+.overlay-widget-control .settings-toggle {
+  min-height: 42px;
+}
+
+.overlay-control-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.overlay-control-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+}
+
+.overlay-control-grid.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.overlay-control-grid.notification-options {
+  grid-template-columns: minmax(0, 60fr) minmax(0, 40fr);
+  align-items: end;
+}
+
+.overlay-widget-control input[type="number"] {
+  min-height: 38px;
+  padding: 8px 9px;
+  border-color: var(--line-strong);
+  background: var(--control);
+  color: var(--text-strong);
+}
+
+.overlay-number-control {
+  position: relative;
+  display: grid;
+}
+
+.overlay-number-control input {
+  padding-right: 34px;
+  appearance: textfield;
+}
+
+.overlay-number-control input::-webkit-outer-spin-button,
+.overlay-number-control input::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.overlay-number-stepper {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  bottom: 4px;
+  width: 24px;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--control-soft);
+}
+
+.overlay-number-stepper button {
+  min-height: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.overlay-number-stepper button + button {
+  border-top: 1px solid var(--line);
+}
+
+.overlay-number-stepper button:hover:not(:disabled) {
+  background: var(--control-hover);
+  color: var(--accent-text);
+}
+
+.overlay-number-stepper button:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+.overlay-range-control {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) 48px;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.overlay-range-control input {
+  width: 100%;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  accent-color: var(--accent);
+  appearance: none;
+}
+
+.overlay-range-control b {
+  color: var(--text-strong);
+  text-align: right;
+}
+
+.overlay-range-control input::-webkit-slider-runnable-track {
+  height: 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--accent) 0 var(--range-progress),
+      var(--control-hover) var(--range-progress) 100%
+    );
+}
+
+.overlay-range-control input::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  appearance: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--panel-soft) 80%, transparent);
+}
+
+.overlay-range-control input::-moz-range-track {
+  height: 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--control-hover);
+}
+
+.overlay-range-control input::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.overlay-range-control input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--panel-soft) 80%, transparent);
+}
+
+.compact-toggle {
+  margin-bottom: 0;
+}
+
+.overlay-preview-panel {
+  height: calc(100vh - 32px);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.overlay-preview-viewport {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+
+.overlay-preview-frame {
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background:
+    linear-gradient(45deg, rgba(255,255,255,.04) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255,255,255,.04) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255,255,255,.04) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,.04) 75%),
+    #10131b;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+  background-size: 24px 24px;
+}
+
+.overlay-preview-stage {
+  transform-origin: top left;
+}
+
+@media (max-width: 1100px) {
+  .overlay-config-page {
+    grid-template-columns: 1fr;
+  }
+
+  .overlay-config-sidebar,
+  .overlay-preview-panel {
+    max-height: none;
+    height: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .overlay-config-page {
+    padding: 10px;
+  }
+
+  .overlay-config-head,
+  .overlay-preview-head {
+    display: grid;
+  }
+
+  .overlay-control-grid,
+  .overlay-control-grid.two {
+    grid-template-columns: 1fr;
+  }
+}
