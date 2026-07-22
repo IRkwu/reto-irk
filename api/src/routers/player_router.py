@@ -85,6 +85,24 @@ def update_player(
 
     return player_repo.update_player(db, player, player_data)
 
+@router.patch("/{player_id}/activate", response_model=PlayerRead)
+def activate_player(
+    player_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_admin),
+) -> PlayerRead:
+    player = _get_player_or_404(db, player_id)
+    return player_repo.set_player_active(db, player, True)
+
+@router.patch("/{player_id}/deactivate", response_model=PlayerRead)
+def deactivate_player(
+    player_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_admin),
+) -> PlayerRead:
+    player = _get_player_or_404(db, player_id)
+    return player_repo.set_player_active(db, player, False)
+
 @router.delete("/{player_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_player(
     player_id: int,

@@ -46,6 +46,12 @@ def update_player(db: Session, player: Player, player_data: PlayerUpdate) -> Pla
     db.refresh(player)
     return player
 
+def set_player_active(db: Session, player: Player, is_active: bool) -> Player:
+    player.is_active = is_active
+    db.commit()
+    db.refresh(player)
+    return player
+
 def delete_player(db: Session, player: Player) -> None:
     db.delete(player)
     db.commit()
