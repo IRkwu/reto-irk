@@ -18,14 +18,24 @@ export function formatEventDate(value) {
     return "";
   }
 
-  const date = new Date(value);
+  const date = parseEventDate(value);
 
   if (Number.isNaN(date.getTime())) {
     return value;
   }
 
-  return new Intl.DateTimeFormat("es", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(date);
+  const hasTime = typeof value !== "string" || /T|\s\d{2}:\d{2}/.test(value);
+  return new Intl.DateTimeFormat("es", hasTime
+    ? { dateStyle: "short", timeStyle: "short" }
+    : { dateStyle: "short" }
+  ).format(date);
+}
+
+export function parseEventDate(value) {
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  return new Date(value);
 }

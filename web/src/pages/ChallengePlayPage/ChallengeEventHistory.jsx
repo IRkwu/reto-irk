@@ -1,5 +1,5 @@
 import { Icon } from "../../components/AppIcon/AppIcon.jsx";
-import { formatEventDate } from "../../utils/formatters";
+import { formatEventDate, parseEventDate } from "../../utils/formatters";
 
 const eventIcons = {
   life_decreased: "mdi:heart-minus-outline",
@@ -54,20 +54,17 @@ export default function ChallengeEventHistory({
             </button>
           ) : null}
         </div>
-        <div className="recent-events-list">
-          {visibleEvents.length ? (
-            visibleEvents.map((event) => (
-              <EventRow
-                key={event.id}
-                event={event}
-                playersById={playersById}
-                dinosById={dinosById}
-              />
-            ))
-          ) : (
+        {visibleEvents.length ? (
+          <EventTimeline
+            events={visibleEvents}
+            playersById={playersById}
+            dinosById={dinosById}
+          />
+        ) : (
+          <div className="recent-events-list">
             <div className="empty-state compact">Sin eventos recientes.</div>
-          )}
-        </div>
+          </div>
+        )}
       </section>
     );
   }
@@ -102,35 +99,111 @@ export default function ChallengeEventHistory({
             <Icon icon="mdi:close" width={20} aria-hidden="true" />
           </button>
         </div>
-        <div className="recent-events-list play-events-modal-list">
-          {recentEvents.map((event) => (
-            <EventRow
-              key={event.id}
-              event={event}
-              playersById={playersById}
-              dinosById={dinosById}
-            />
-          ))}
+        <div className="play-events-modal-list">
+          <EventTimeline
+            events={recentEvents}
+            playersById={playersById}
+            dinosById={dinosById}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function EventRow({ event, playersById, dinosById }) {
+function EventTimeline({ events, playersById, dinosById }) {
+  return (
+    <div className="recent-events-list event-timeline">
+      {groupEventsByDay(events).map((group) => (
+        <section className="event-day-group" key={group.key}>
+          <div className="event-day-label">
+            <span>{group.label}</span>
+            <span>{group.events.length} eventos</span>
+          </div>
+          <div className="event-day-items">
+            {group.events.map((event) => (
+              <EventRow
+                key={event.id}
+                event={event}
+                playersById={playersById}
+                dinosById={dinosById}
+                showDate={false}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function groupEventsByDay(events) {
+  const groups = new Map();
+
+  events.forEach((event) => {
+    const date = parseEventDate(event.created_at);
+    const key = Number.isNaN(date.getTime())
+      ? "unknown"
+      : `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    const group = groups.get(key) || {
+      key,
+      label: formatEventDay(date),
+      events: [],
+    };
+    group.events.push(event);
+    groups.set(key, group);
+  });
+
+  return [...groups.values()];
+}
+
+function formatEventDay(date) {
+  if (Number.isNaN(date.getTime())) {
+    return "Fecha desconocida";
+  }
+
+  const today = new Date();
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const startOfDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const dayDifference = Math.round((startOfToday - startOfDate) / 86400000);
+
+  if (dayDifference === 0) {
+    return "Hoy";
+  }
+  if (dayDifference === 1) {
+    return "Ayer";
+  }
+
+  return date.toLocaleDateString("es-CL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function EventRow({ event, playersById, dinosById, showDate = true }) {
   const playerName = playersById.get(event.player_id)?.player?.name;
-  const dinoName = dinosById.get(event.dino_id)?.name;
+  const dino = dinosById.get(event.dino_id);
+  const dinoName = dino?.name;
   const tone = getEventTone(event.event_type);
+  const eventDate = formatEventDate(event.created_at);
+  const eventTime = eventDate.includes(",")
+    ? eventDate.slice(eventDate.lastIndexOf(",") + 1).trim()
+    : "";
 
   return (
     <div className={`recent-event-row ${tone}`}>
       <span className="recent-event-icon">
-        <Icon icon={eventIcons[event.event_type] || "mdi:history"} width={20} aria-hidden="true" />
+        {["dino_tamed", "dino_untamed"].includes(event.event_type) && dino?.image_url ? (
+          <img className="recent-event-dino-image" src={dino.image_url} alt="" />
+        ) : (
+          <Icon icon={eventIcons[event.event_type] || "mdi:history"} width={20} aria-hidden="true" />
+        )}
       </span>
       <span className="recent-event-copy">
         <b>{event.message || event.event_type}</b>
         <span>
-          {[playerName, dinoName, formatEventDate(event.created_at)].filter(Boolean).join(" - ")}
+          {[playerName, dinoName, showDate ? eventDate : eventTime].filter(Boolean).join(" - ")}
         </span>
       </span>
       {event.lives_after != null ? (

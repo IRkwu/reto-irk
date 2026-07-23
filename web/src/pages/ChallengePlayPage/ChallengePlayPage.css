@@ -274,13 +274,79 @@ html:not([data-density="compact"]) .play-lives-card {
   gap: 8px;
   margin-top: 12px;
 }
+.event-timeline {
+  gap: 16px;
+}
+.event-day-group {
+  display: grid;
+  gap: 8px;
+}
+.event-day-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding-inline: 2px;
+  color: var(--text-strong);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.event-day-label span:last-child {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.event-day-items {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  padding-left: 16px;
+}
+.event-day-items::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 6px;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--line);
+}
+.event-day-items .recent-event-row {
+  position: relative;
+}
+.event-day-items .recent-event-row::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -14px;
+  width: 7px;
+  height: 7px;
+  border: 2px solid var(--line-hover);
+  border-radius: 50%;
+  background: var(--panel-soft);
+  transform: translateY(-50%);
+}
+.event-day-items .recent-event-row.info::before {
+  border-color: var(--accent);
+}
+.event-day-items .recent-event-row.success::before {
+  border-color: var(--success-border);
+}
+.event-day-items .recent-event-row.danger::before {
+  border-color: var(--danger-border);
+}
 .recent-event-row {
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) auto;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
   min-height: 58px;
-  padding: 9px 10px;
+  padding: 9px 10px 11px;
   border: 1px solid var(--line-strong);
   border-left-width: 4px;
   border-radius: 8px;
@@ -299,12 +365,21 @@ html:not([data-density="compact"]) .play-lives-card {
 .recent-event-icon {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--line-strong);
   border-radius: 8px;
   background: var(--control-soft);
   color: var(--accent);
+}
+.recent-event-dino-image {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+.recent-event-icon > svg {
+  width: 26px;
+  height: 26px;
 }
 .recent-event-row.success .recent-event-icon {
   color: var(--success-text);
@@ -348,14 +423,24 @@ html[data-density="compact"] .recent-events-list {
 }
 
 html[data-density="compact"] .recent-event-row {
-  grid-template-columns: 30px minmax(0, 1fr) auto;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
   min-height: 44px;
   padding: 6px 8px;
 }
 
 html[data-density="compact"] .recent-event-icon {
-  width: 28px;
-  height: 28px;
+  width: 38px;
+  height: 38px;
+}
+
+html[data-density="compact"] .recent-event-dino-image {
+  width: 32px;
+  height: 32px;
+}
+
+html[data-density="compact"] .recent-event-icon > svg {
+  width: 23px;
+  height: 23px;
 }
 
 html[data-density="compact"] .recent-event-copy span {
@@ -400,11 +485,38 @@ html[data-density="compact"] .recent-event-lives {
   background: var(--control-soft);
   color: var(--text-strong);
 }
+.play-events-modal .recent-event-row {
+  padding-bottom: 15px;
+}
+.play-events-modal .recent-event-copy {
+  padding-bottom: 3px;
+}
 .play-events-modal-list {
   min-height: 0;
   margin-top: 0;
   overflow: auto;
   padding-right: 4px;
+  scrollbar-color: var(--line-hover) var(--panel-soft);
+  scrollbar-width: thin;
+}
+.play-events-modal-list > .event-timeline {
+  margin-top: 0;
+  padding-right: 0;
+}
+.play-events-modal-list::-webkit-scrollbar {
+  width: 8px;
+}
+.play-events-modal-list::-webkit-scrollbar-track {
+  background: var(--panel-soft);
+  border-radius: 999px;
+}
+.play-events-modal-list::-webkit-scrollbar-thumb {
+  background: var(--line-hover);
+  border: 2px solid var(--panel-soft);
+  border-radius: 999px;
+}
+.play-events-modal-list::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
 
 @media (max-width: 960px) {
@@ -424,7 +536,7 @@ html[data-density="compact"] .recent-event-lives {
 
 @media (max-width: 720px) {
   .recent-event-row {
-    grid-template-columns: 38px minmax(0, 1fr) auto;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
   }
   .player-head {
     display: flex;
@@ -476,7 +588,7 @@ html[data-density="compact"] .recent-event-lives {
     width: 100%;
   }
   .recent-event-row {
-    grid-template-columns: 38px minmax(0, 1fr) auto;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
     align-items: center;
   }
   .recent-event-lives {

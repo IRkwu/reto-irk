@@ -122,6 +122,10 @@ export default function ChallengePlayPage() {
   });
 
   async function changeLives(direction) {
+    if (direction === "decrease" && (challenge?.current_lives ?? 0) <= 0) {
+      return;
+    }
+
     try {
       const updated =
         direction === "increase"
@@ -194,6 +198,7 @@ export default function ChallengePlayPage() {
               <>
                 <button
                   className="btn ghost play-life-btn"
+                  disabled={challenge.current_lives <= 0}
                   onClick={() => changeLives("decrease")}
                   title="Restar una vida"
                   aria-label="Restar una vida"
