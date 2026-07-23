@@ -9,11 +9,12 @@ export default function DinoCardGrid({
   action,
   actionLabel,
   disabled = false,
+  emptyContent = null,
   className = "",
 }) {
   return (
     <div className={`dino-card-grid ${className}`.trim()}>
-      {assignments.map((assignment) => {
+      {assignments.length === 0 ? emptyContent : assignments.map((assignment) => {
         const isDisabled =
           typeof disabled === "function" ? disabled(assignment) : disabled;
         const nextActionLabel =

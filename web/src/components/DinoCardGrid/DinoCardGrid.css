@@ -7,6 +7,10 @@
   gap: 8px;
   margin-top: 10px;
 }
+.dino-card-grid-empty {
+  width: 100%;
+  color: var(--muted);
+}
 .dino-card-grid.challenge-dino-card-grid {
   --challenge-dino-card-size: clamp(128px, 9vw, 136px);
   --challenge-dino-gap: 12px;

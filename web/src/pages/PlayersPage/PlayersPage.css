@@ -70,7 +70,6 @@
 }
 .players-admin-head {
   align-items: flex-start;
-  margin-bottom: 14px;
 }
 .players-admin-head .muted {
   color: var(--muted);

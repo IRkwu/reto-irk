@@ -25,9 +25,15 @@
   overflow-wrap: anywhere;
 }
 .challenge-card-title-row {
-  display: grid;
-  gap: 7px;
-  justify-items: start;
+  min-width: 0;
+}
+.challenge-card-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+  white-space: nowrap;
 }
 .challenge-card-meta {
   grid-column: 1 / -1;

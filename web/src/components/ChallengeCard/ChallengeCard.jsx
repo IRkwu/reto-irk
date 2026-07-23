@@ -57,10 +57,12 @@ export default function ChallengeCard({ challenge, mapName }) {
         <div>
           <div className="challenge-card-title-row">
             <div className="h2">{challenge.name}</div>
-            <GameBadge game={challenge.game} />
           </div>
         </div>
-        <StatusBadge status={challenge.status} />
+        <div className="challenge-card-status-row">
+          <GameBadge game={challenge.game} />
+          <StatusBadge status={challenge.status} />
+        </div>
         <div className="challenge-card-meta">
           <span>
             <Icon icon="mdi:map-marker-radius-outline" width={16} aria-hidden="true" />

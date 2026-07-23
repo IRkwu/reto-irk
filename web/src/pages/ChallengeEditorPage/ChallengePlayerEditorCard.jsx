@@ -99,8 +99,11 @@ export default function ChallengePlayerEditorCard({
             value={selectedDinoId || ""}
             options={dinoOptions}
             variant="dino-grid"
-            getIcon={(option) => (
-              <DinoIcon dino={option?.value ? option : undefined} imageClassName="picker-thumb" iconClassName="picker-dino-fallback" fallbackImageUrl={DEFAULT_DINO_PICKER_ICON_URL} />
+            hidePlaceholderOption
+            getIcon={(option, { isMenuOption } = {}) => (
+              option?.value || !isMenuOption ? (
+                <DinoIcon dino={option?.value ? option : undefined} imageClassName="picker-thumb" iconClassName="picker-dino-fallback" fallbackImageUrl={DEFAULT_DINO_PICKER_ICON_URL} />
+              ) : null
             )}
             disabled={!canEditChallenge}
             onChange={(nextValue) => onSelectedDinoChange(challengePlayer.id, nextValue)}
@@ -130,11 +133,8 @@ export default function ChallengePlayerEditorCard({
           canEditChallenge && !assignment.is_tamed ? "Quitar dino" : undefined
         }
         disabled={(assignment) => !canEditChallenge || assignment.is_tamed}
+        emptyContent={<div className="muted dino-card-grid-empty">Sin dinos asignados.</div>}
       />
-
-      {assignments.length === 0 ? (
-        <div className="muted">Sin dinos asignados.</div>
-      ) : null}
     </article>
   );
 }
