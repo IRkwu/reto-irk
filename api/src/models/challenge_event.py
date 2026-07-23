@@ -1,7 +1,7 @@
-from datetime import date
+from datetime import datetime
 from enum import StrEnum
 
-from sqlalchemy import Date, Enum, ForeignKey, Integer, Text, func
+from sqlalchemy import DateTime, Enum, ForeignKey, Integer, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database.base import Base
@@ -25,7 +25,11 @@ class ChallengeEvent(Base):
     dino_id: Mapped[int | None] = mapped_column(ForeignKey("dinos.id"), index=True)
     lives_after: Mapped[int | None] = mapped_column(Integer)
     message: Mapped[str | None] = mapped_column(Text)
-    created_at: Mapped[date] = mapped_column(Date, server_default=func.current_date())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
 
     challenge = relationship("Challenge", back_populates="events")
     player = relationship("ChallengePlayer", back_populates="events")

@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from sqlalchemy.orm import Session
 
 from src.models.challenge_event import ChallengeEvent, ChallengeEventType
@@ -43,6 +45,7 @@ def create_challenge_event(
         dino_id=dino_id,
         lives_after=lives_after,
         message=message,
+        created_at=datetime.now(timezone.utc),
     )
     db.add(event)
     db.commit()

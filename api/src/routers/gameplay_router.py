@@ -71,6 +71,12 @@ async def decrease_lives(
         lives_data.dino_id,
     )
 
+    if challenge.current_lives <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El desafio ya no tiene vidas disponibles",
+        )
+
     challenge = challenge_repo.decrease_challenge_lives(
         db,
         challenge,
