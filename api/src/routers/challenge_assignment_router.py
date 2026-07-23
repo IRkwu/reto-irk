@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
-from src.core.challenge_rules import MAX_DINOS_PER_PLAYER
+from src.core.challenge_rules import MAX_DINOS_PER_PLAYER, dino_is_available_for_game
 from src.core.security import get_current_admin
 from src.database.session import get_db
 from src.models.challenge import ChallengeStatus
@@ -11,6 +11,7 @@ from src.repositories import challenge_dino_assignment_repository as assignment_
 from src.repositories import challenge_event_repository as event_repo
 from src.repositories import challenge_player_repository as player_repo
 from src.repositories import challenge_repository as challenge_repo
+from src.repositories import dino_map_repository as dino_map_repo
 from src.repositories import dino_repository as dino_repo
 from src.schemas.challenge_dino_assignment import ChallengeDinoAssignmentCreate, ChallengeDinoAssignmentRead, ChallengeDinoAssignmentUpdate
 from src.utils.websocket_manager import websocket_manager
@@ -113,6 +114,33 @@ def _ensure_dino_available(
             detail="El dino ya esta asignado en este desafio",
         )
 
+def _ensure_dino_allowed_for_challenge(db: Session, challenge, dino_id: int) -> None:
+    dino = dino_repo.get_dino(db, dino_id)
+
+    if dino is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dino no encontrado",
+        )
+
+    dino_map = dino_map_repo.get_dino_map_by_pair(
+        db=db,
+        dino_id=dino_id,
+        map_id=challenge.map_id,
+    )
+
+    if not dino.is_active or dino_map is None or not dino_map.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El dino no esta disponible para el mapa del desafio",
+        )
+
+    if not dino_is_available_for_game(challenge.game, dino.game):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El dino no esta disponible para el juego del desafio",
+        )
+
 async def _complete_challenge_if_ready(db: Session, challenge_id: int) -> None:
     challenge = challenge_repo.get_challenge(db, challenge_id)
     assignments = assignment_repo.list_assignments(db, challenge_id)
@@ -177,6 +205,7 @@ async def create_assignment(
         player_id=assignment_data.player_id,
         dino_id=assignment_data.dino_id,
     )
+    _ensure_dino_allowed_for_challenge(db, challenge, assignment_data.dino_id)
     _ensure_dino_available(
         db=db,
         challenge_id=challenge_id,
@@ -216,6 +245,7 @@ async def update_assignment(
     player_id = assignment_data.player_id if assignment_data.player_id is not None else assignment.player_id
     dino_id = assignment_data.dino_id if assignment_data.dino_id is not None else assignment.dino_id
     _validate_player_and_dino(db, challenge_id, player_id, dino_id)
+    _ensure_dino_allowed_for_challenge(db, challenge, dino_id)
     _ensure_dino_available(
         db=db,
         challenge_id=challenge_id,

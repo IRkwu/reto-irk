@@ -1,5 +1,7 @@
 import { Icon } from "../../components/AppIcon/AppIcon.jsx";
+import DinoIcon from "../../components/DinoIcon/DinoIcon.jsx";
 import Picker from "../../components/Picker/Picker.jsx";
+import { DINO_PICKER_FALLBACK_URL } from "../../utils/dinoIcons";
 
 export default function MapDinosPanel({
   editMode,
@@ -27,6 +29,10 @@ export default function MapDinosPanel({
             options={dinoOptions}
             placeholder={t("mapsPage.selectDino")}
             icon="mdi:dinosaur"
+            variant="dino-grid"
+            getIcon={(option) => (
+              <DinoIcon dino={option} imageClassName="picker-thumb" iconClassName="picker-dino-fallback" fallbackImageUrl={DINO_PICKER_FALLBACK_URL} />
+            )}
             onChange={onSelectedDinoChange}
           />
           <button className="btn" type="button" disabled={!selectedMapId || !selectedDinoId} onClick={onAddDino} title={t("mapsPage.addDino")} aria-label={t("mapsPage.addDino")}>
@@ -38,7 +44,7 @@ export default function MapDinosPanel({
       <div className="map-dino-list">
         {mapDinos.map((dino) => (
           <div className={`map-dino-chip ${editMode ? "editable" : ""}`} key={dino.id}>
-            {dino.image_url ? <img src={dino.image_url} alt="" /> : <Icon icon="mdi:dinosaur" width={18} aria-hidden="true" />}
+            <DinoIcon dino={dino} />
             <span>{dino.name}</span>
             {editMode ? (
               <button

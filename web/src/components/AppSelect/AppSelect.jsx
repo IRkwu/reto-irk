@@ -1,4 +1,4 @@
-import { useId, useMemo, useState } from "react";
+import { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "../AppIcon/AppIcon.jsx";
 import { useI18n } from "../../i18n";
 import "./AppSelect.css";
@@ -14,6 +14,10 @@ export default function AppSelect({
 }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState("down");
+  const [menuPosition, setMenuPosition] = useState(null);
+  const controlRef = useRef(null);
+  const menuRef = useRef(null);
   const generatedId = useId();
   const selectId = id || generatedId;
   const normalizedOptions = useMemo(
@@ -33,6 +37,49 @@ export default function AppSelect({
   const labelId = `${selectId}-label`;
   const valueId = `${selectId}-value`;
   const menuId = `${selectId}-menu`;
+
+  useLayoutEffect(() => {
+    if (!open || disabled || !controlRef.current || !menuRef.current) {
+      setMenuPosition(null);
+      return undefined;
+    }
+
+    function positionMenu() {
+      const controlBounds = controlRef.current?.getBoundingClientRect();
+      const menu = menuRef.current;
+
+      if (!controlBounds || !menu) {
+        return;
+      }
+
+      const menuHeight = Math.min(menu.scrollHeight, 240);
+      const viewportPadding = 8;
+      const spaceAbove = Math.max(0, controlBounds.top - viewportPadding);
+      const spaceBelow = Math.max(0, window.innerHeight - controlBounds.bottom - viewportPadding);
+      const nextPlacement = spaceBelow < menuHeight && spaceAbove > spaceBelow ? "up" : "down";
+      const availableSpace = nextPlacement === "up" ? spaceAbove : spaceBelow;
+      const visibleHeight = Math.max(80, Math.min(menuHeight, availableSpace));
+      const top = nextPlacement === "up"
+        ? controlBounds.top - visibleHeight - 6
+        : controlBounds.bottom + 6;
+
+      setPlacement(nextPlacement);
+      setMenuPosition({
+        top: Math.max(viewportPadding, top),
+        left: controlBounds.left,
+        width: controlBounds.width,
+        maxHeight: visibleHeight,
+      });
+    }
+
+    positionMenu();
+    window.addEventListener("resize", positionMenu);
+    window.addEventListener("scroll", positionMenu, true);
+    return () => {
+      window.removeEventListener("resize", positionMenu);
+      window.removeEventListener("scroll", positionMenu, true);
+    };
+  }, [disabled, normalizedOptions.length, open]);
 
   function selectOption(optionId) {
     if (disabled) {
@@ -68,7 +115,7 @@ export default function AppSelect({
       }}
     >
       {label ? <span id={labelId}>{label}</span> : null}
-      <div className="app-select-control">
+      <div className="app-select-control" ref={controlRef}>
         <button
           className="app-select-button"
           type="button"
@@ -87,7 +134,9 @@ export default function AppSelect({
 
         {open && !disabled ? (
           <div
-            className="app-select-menu"
+            className={`app-select-menu is-fixed ${placement === "up" ? "is-up" : "is-down"}`}
+            ref={menuRef}
+            style={menuPosition || undefined}
             id={menuId}
             role="listbox"
             aria-labelledby={label ? labelId : undefined}

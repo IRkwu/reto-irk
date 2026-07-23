@@ -111,3 +111,56 @@
   height: 26px;
   object-fit: contain;
 }
+
+.picker-dino-grid .picker-menu {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  max-height: min(460px, 65vh);
+}
+.picker-dino-grid .picker-option {
+  min-width: 0;
+  min-height: 92px;
+  aspect-ratio: 1;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 6px;
+  padding: 8px 6px;
+  text-align: center;
+}
+.picker-dino-grid .picker-option .picker-leading {
+  width: 44px;
+  height: 44px;
+  justify-self: center;
+  color: var(--text-strong);
+}
+.picker-dino-grid .picker-option .picker-thumb {
+  width: 44px;
+  height: 44px;
+}
+.picker-dino-grid .picker-option > span:last-child {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .picker-dino-grid .picker-menu {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .picker-dino-grid .picker-menu {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 520px) {
+  .picker-dino-grid .picker-menu {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 360px) {
+  .picker-dino-grid .picker-menu {
+    grid-template-columns: 1fr;
+  }
+}

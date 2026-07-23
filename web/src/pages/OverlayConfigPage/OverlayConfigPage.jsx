@@ -146,6 +146,7 @@ export default function OverlayConfigPage() {
   const dragRef = useRef(null);
   const [overlay, setOverlay] = useState(() => getPreviewOverlay(t));
   const [events, setEvents] = useState(() => getPreviewEvents(t));
+  const [previewNotification, setPreviewNotification] = useState(null);
   const [scale, setScale] = useState(0);
   const [previewBox, setPreviewBox] = useState({ width: 0, height: 0 });
   const [config, setConfig] = useState(() =>
@@ -227,12 +228,19 @@ export default function OverlayConfigPage() {
       setScale(Number.isFinite(nextScale) && nextScale > 0 ? nextScale : 0);
     }
 
-    frameId = window.requestAnimationFrame(updateScale);
+    function scheduleUpdate() {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(updateScale);
+    }
+
+    scheduleUpdate();
     const observer = new ResizeObserver(updateScale);
     observer.observe(element);
+    window.addEventListener("resize", scheduleUpdate, { passive: true });
     return () => {
       window.cancelAnimationFrame(frameId);
       observer.disconnect();
+      window.removeEventListener("resize", scheduleUpdate);
     };
   }, [resolution.height, resolution.width]);
 
@@ -280,6 +288,17 @@ export default function OverlayConfigPage() {
     updateConfig(defaultOverlayConfig);
   }
 
+  function simulateNotification() {
+    setPreviewNotification({
+      id_event: `preview-notification-${Date.now()}`,
+      event_type: "dino_tamed",
+      player_name: "IRkwu",
+      dino_name: "Carcharadontosaurio",
+      lives_after: 7,
+      message: t("obsConfig.dinoTamed"),
+    });
+  }
+
   function updateResolution(patch) {
     updateConfig((prev) => {
       const preset = patch.preset || prev.resolution.preset;
@@ -314,6 +333,7 @@ export default function OverlayConfigPage() {
     }
 
     event.preventDefault();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
     const widget = config.widgets[widgetKey];
     const bounds = event.currentTarget.getBoundingClientRect();
     const widgetBox = {
@@ -337,6 +357,7 @@ export default function OverlayConfigPage() {
     }
 
     event.preventDefault();
+    event.currentTarget.setPointerCapture?.(event.pointerId);
     const widget = config.widgets[widgetKey];
     dragRef.current = {
       type: "resize",
@@ -391,9 +412,11 @@ export default function OverlayConfigPage() {
 
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
     return () => {
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
     };
   }, [resolution, scale, updateWidget]);
 
@@ -443,6 +466,7 @@ export default function OverlayConfigPage() {
               maxY={resolution.height}
               resolutionScale={resolutionScale}
               onChange={(patch) => updateWidget(widgetKey, patch)}
+              onPreviewNotification={simulateNotification}
               t={t}
             />
           ))}
@@ -459,6 +483,7 @@ export default function OverlayConfigPage() {
         <div
           className="overlay-preview-viewport"
           ref={previewRef}
+          style={{ aspectRatio: `${resolution.width} / ${resolution.height}` }}
         >
           <div
             className="overlay-preview-frame"
@@ -482,6 +507,7 @@ export default function OverlayConfigPage() {
                 config={config}
                 challengeKey={previewChallengeId || "global-preview"}
                 preview
+                previewNotification={previewNotification}
                 onWidgetPointerDown={startDragging}
                 onWidgetResizePointerDown={startResizing}
               />
@@ -493,7 +519,7 @@ export default function OverlayConfigPage() {
   );
 }
 
-function WidgetControls({ widgetKey, widget, playersCount = 1, maxX, maxY, resolutionScale, onChange, t }) {
+function WidgetControls({ widgetKey, widget, playersCount = 1, maxX, maxY, resolutionScale, onChange, onPreviewNotification, t }) {
   const isNotificationWidget = widgetKey === "notifications";
   const isLimitedList = widgetKey === "notifications";
   const canConfigureAlignment = widgetKey !== "lives" && widgetKey !== "dinos" && widgetKey !== "players";
@@ -505,8 +531,9 @@ function WidgetControls({ widgetKey, widget, playersCount = 1, maxX, maxY, resol
   const maxOffsetX = Math.max(0, Math.round(maxX - widgetBox.width));
   const maxOffsetY = Math.max(0, Math.round(maxY - widgetBox.height));
   const controlGridClass = `overlay-control-grid ${
-    canConfigureAlignment && canConfigureMap ? "two" : "single"
+    canConfigureAlignment && canConfigureMap ? "two always-inline" : "single"
   }`.trim();
+  const positionGridClass = `overlay-control-grid position-control-grid ${canConfigureWidth ? "with-width" : "without-width"}`;
 
   return (
     <section className="overlay-widget-control">
@@ -521,7 +548,7 @@ function WidgetControls({ widgetKey, widget, playersCount = 1, maxX, maxY, resol
         </label>
       </div>
 
-      <div className="overlay-control-grid">
+      <div className={positionGridClass}>
         <NumberControl
           label="X"
           value={position.offsetX}
@@ -560,12 +587,33 @@ function WidgetControls({ widgetKey, widget, playersCount = 1, maxX, maxY, resol
       {canConfigureAlignment || canConfigureMap ? (
         <div className={controlGridClass}>
           {canConfigureAlignment ? (
-            <AppSelect
-              label={t("obsConfig.alignment")}
-              value={widget.align}
-              options={getOptionLabels(alignmentOptionDefs, t)}
-              onChange={(align) => onChange({ align })}
-            />
+            isNotificationWidget ? (
+              <div className="notification-alignment-row">
+                <AppSelect
+                  label={t("obsConfig.alignment")}
+                  value={widget.align}
+                  options={getOptionLabels(alignmentOptionDefs, t)}
+                  onChange={(align) => onChange({ align })}
+                />
+                <button
+                  className="notification-preview-button"
+                  type="button"
+                  onClick={onPreviewNotification}
+                  title={t("obsConfig.previewNotification")}
+                  aria-label={t("obsConfig.previewNotification")}
+                >
+                  <Icon icon="mdi:play-circle-outline" width={17} aria-hidden="true" />
+                  {t("obsConfig.previewNotification")}
+                </button>
+              </div>
+            ) : (
+              <AppSelect
+                label={t("obsConfig.alignment")}
+                value={widget.align}
+                options={getOptionLabels(alignmentOptionDefs, t)}
+                onChange={(align) => onChange({ align })}
+              />
+            )
           ) : null}
           {canConfigureMap ? (
             <label className="settings-toggle compact-toggle">
@@ -607,7 +655,7 @@ function WidgetControls({ widgetKey, widget, playersCount = 1, maxX, maxY, resol
       ) : null}
 
       {widgetKey === "players" ? (
-        <div className="overlay-control-grid two">
+        <div className="overlay-control-grid two always-inline">
           <AppSelect
             label={t("obsConfig.alignment")}
             value={widget.align === "horizontal" || widget.layout === "horizontal" ? "horizontal" : widget.align || "left"}

@@ -10,10 +10,12 @@ from src.core.challenge_rules import (
 )
 
 ChallengeStatusValue = Literal["draft", "active", "completed", "cancelled"]
+ChallengeGame = Literal["ark_survival_evolved", "ark_survival_ascended"]
 
 class ChallengeCreate(BaseModel):
     name: str
     map_id: int
+    game: ChallengeGame = "ark_survival_evolved"
     spawn_zone_id: int | None = None
     player_count: int = Field(
         default=DEFAULT_PLAYER_COUNT,
@@ -37,6 +39,7 @@ class ChallengeRead(BaseModel):
     id: int
     name: str
     map_id: int
+    game: ChallengeGame
     spawn_zone_id: int | None
     status: ChallengeStatusValue
     player_count: int

@@ -287,7 +287,7 @@ export default function PlayersPage() {
       </div>
 
       {modalOpen ? (
-        <div className="modal-backdrop" onClick={closeModal}>
+        <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && closeModal()}>
           <form
             className="challenge-modal player-admin-modal"
             ref={playerModalRef}

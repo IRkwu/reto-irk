@@ -14,7 +14,7 @@
 }
 
 html:not([data-density="compact"]) .container:has(.editor-shell) {
-  width: min(1280px, calc(100vw - 72px));
+  width: min(1380px, calc(100vw - 72px));
   padding-inline: 0;
 }
 

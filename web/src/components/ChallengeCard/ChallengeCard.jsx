@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "../AppIcon/AppIcon.jsx";
+import GameBadge from "../GameBadge/GameBadge.jsx";
 import { useI18n } from "../../i18n";
 import StatusBadge from "../StatusBadge/StatusBadge.jsx";
 import {
@@ -54,7 +55,10 @@ export default function ChallengeCard({ challenge, mapName }) {
     <article className="card challenge-card">
       <div className="card-head">
         <div>
-          <div className="h2">{challenge.name}</div>
+          <div className="challenge-card-title-row">
+            <div className="h2">{challenge.name}</div>
+            <GameBadge game={challenge.game} />
+          </div>
         </div>
         <StatusBadge status={challenge.status} />
         <div className="challenge-card-meta">

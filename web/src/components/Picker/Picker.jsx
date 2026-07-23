@@ -10,6 +10,7 @@ export default function Picker({
   icon = "mdi:map-marker-radius-outline",
   iconUrl,
   getIcon,
+  variant = "",
   disabled = false,
 }) {
   const [open, setOpen] = useState(false);
@@ -38,7 +39,11 @@ export default function Picker({
 
   function renderIcon(option) {
     if (getIcon) {
-      return getIcon(option);
+      const customIcon = getIcon(option);
+
+      if (customIcon) {
+        return customIcon;
+      }
     }
 
     const imageUrl = option?.image_url || option?.icon_url || iconUrl;
@@ -51,7 +56,7 @@ export default function Picker({
   }
 
   return (
-    <div className="picker" ref={rootRef}>
+    <div className={`picker ${variant ? `picker-${variant}` : ""}`.trim()} ref={rootRef}>
       <button
         className="picker-button"
         type="button"

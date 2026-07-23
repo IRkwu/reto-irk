@@ -125,13 +125,58 @@
   gap: 8px;
 }
 
+.position-control-grid.without-width {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .overlay-control-grid.two {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: end;
 }
 
+.overlay-control-grid.always-inline {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .overlay-control-grid.single {
   grid-template-columns: minmax(0, 1fr);
+}
+
+.notification-alignment-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.notification-preview-button {
+  min-width: 0;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--control);
+  color: var(--text-strong);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.notification-preview-button:hover {
+  border-color: var(--line-hover);
+  background: var(--control-hover);
+}
+
+.notification-preview-button svg {
+  flex: 0 0 auto;
+  color: var(--accent);
 }
 
 .overlay-control-grid.notification-options {
@@ -288,12 +333,18 @@
 .overlay-preview-viewport {
   width: 100%;
   height: 100%;
+  min-width: 0;
   min-height: 0;
   display: grid;
   place-items: center;
+  overflow: hidden;
 }
 
 .overlay-preview-frame {
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
   overflow: hidden;
   border: 1px solid var(--line-strong);
   border-radius: 8px;
@@ -321,6 +372,15 @@
     max-height: none;
     height: auto;
   }
+
+  .overlay-preview-panel {
+    grid-template-rows: auto auto;
+  }
+
+  .overlay-preview-viewport {
+    height: auto;
+    min-height: 180px;
+  }
 }
 
 @media (max-width: 560px) {
@@ -333,8 +393,36 @@
     display: grid;
   }
 
+  .overlay-config-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .overlay-config-head-actions {
+    display: grid;
+    grid-template-columns: minmax(112px, auto);
+    gap: 8px;
+  }
+
+  .overlay-config-head-actions .btn {
+    width: auto;
+    min-width: 112px;
+  }
+
   .overlay-control-grid,
   .overlay-control-grid.two {
     grid-template-columns: 1fr;
+  }
+
+  .position-control-grid.with-width {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .position-control-grid.without-width {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .overlay-control-grid.always-inline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

@@ -24,6 +24,11 @@
   color: var(--text-strong);
   overflow-wrap: anywhere;
 }
+.challenge-card-title-row {
+  display: grid;
+  gap: 7px;
+  justify-items: start;
+}
 .challenge-card-meta {
   grid-column: 1 / -1;
   width: 100%;

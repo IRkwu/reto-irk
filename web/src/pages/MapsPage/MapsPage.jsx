@@ -218,8 +218,9 @@ export default function MapsPage() {
     setGameFilter(value);
   }
 
-  function openEditMapModal() {
-    if (selectedMap) {
+  function openEditMapModal(map = selectedMap) {
+    if (map) {
+      setSelectedMapId(map.id);
       setMapModalMode("edit");
     }
   }
@@ -411,28 +412,6 @@ export default function MapsPage() {
           </button>
           {editMode ? (
             <>
-              <button
-                className="btn ghost"
-                type="button"
-                disabled={!selectedMap}
-                onClick={openEditMapModal}
-                title={selectedMap ? t("mapsPage.editMap") : t("mapsPage.editMap")}
-                aria-label={selectedMap ? t("mapsPage.editMap") : t("mapsPage.editMap")}
-              >
-                <span className="maps-action-icon" aria-hidden="true" />
-                {t("mapsPage.editMap")}
-              </button>
-              <button
-                className="btn danger"
-                type="button"
-                disabled={!selectedMap}
-                onClick={() => requestRemoveMap(selectedMap)}
-                title={t("mapsPage.deleteMap")}
-                aria-label={t("mapsPage.deleteMap")}
-              >
-                <Icon icon="mdi:trash-can-outline" width={18} aria-hidden="true" />
-                {t("mapsPage.deleteMap")}
-              </button>
               <button className="btn" type="button" onClick={openCreateMapModal} title={t("mapsPage.newMap")} aria-label={t("mapsPage.newMap")}>
                 <Icon icon="mdi:plus" width={18} aria-hidden="true" />
                 {t("mapsPage.newMap")}
@@ -494,26 +473,52 @@ export default function MapsPage() {
         <section className="maps-card-section">
           <div className="maps-card-grid" role="radiogroup" aria-label={t("mapsPage.selectMapHelp")}>
             {maps.map((map) => (
-              <button
+              <article
                 className={`map-admin-card ${Number(selectedMapId) === map.id ? "selected" : ""}`}
                 key={map.id}
-                type="button"
-                onClick={() => setSelectedMapId(map.id)}
-                title={t("mapsPage.selectMap", { name: map.name })}
-                aria-label={t("mapsPage.selectMap", { name: map.name })}
-                role="radio"
-                aria-checked={Number(selectedMapId) === map.id}
               >
-                {map.image_url ? (
-                  <img src={map.image_url} alt={map.name} />
-                ) : (
-                  <span className="map-admin-fallback">
-                    <Icon icon="mdi:map" width={34} aria-hidden="true" />
-                  </span>
-                )}
-                <span className="map-admin-name">{map.name}</span>
-                <GameBadge game={map.game} className="map-admin-game" />
-              </button>
+                <button
+                  className="map-admin-select"
+                  type="button"
+                  onClick={() => setSelectedMapId(map.id)}
+                  title={t("mapsPage.selectMap", { name: map.name })}
+                  aria-label={t("mapsPage.selectMap", { name: map.name })}
+                  role="radio"
+                  aria-checked={Number(selectedMapId) === map.id}
+                >
+                  {map.image_url ? (
+                    <img src={map.image_url} alt={map.name} />
+                  ) : (
+                    <span className="map-admin-fallback">
+                      <Icon icon="mdi:map" width={34} aria-hidden="true" />
+                    </span>
+                  )}
+                  <span className="map-admin-name">{map.name}</span>
+                  <GameBadge game={map.game} className="map-admin-game" />
+                </button>
+                {editMode ? (
+                  <div className="map-admin-actions">
+                    <button
+                      className="btn ghost icon-only"
+                      type="button"
+                      onClick={() => openEditMapModal(map)}
+                      title={t("mapsPage.editMap")}
+                      aria-label={t("mapsPage.editMap")}
+                    >
+                      <Icon icon="mdi:pencil-outline" width={17} aria-hidden="true" />
+                    </button>
+                    <button
+                      className="btn danger icon-only"
+                      type="button"
+                      onClick={() => requestRemoveMap(map)}
+                      title={t("mapsPage.deleteMap")}
+                      aria-label={t("mapsPage.deleteMap")}
+                    >
+                      <Icon icon="mdi:trash-can-outline" width={17} aria-hidden="true" />
+                    </button>
+                  </div>
+                ) : null}
+              </article>
             ))}
           </div>
         </section>

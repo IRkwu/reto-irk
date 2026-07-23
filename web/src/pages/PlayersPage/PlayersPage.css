@@ -5,6 +5,7 @@
 
 .container:has(.players-admin-shell) {
   width: min(1440px, 92vw);
+  padding-inline: 18px;
 }
 .players-page-actions {
   display: flex;
@@ -276,6 +277,12 @@
 }
 .metric-mini span { display: block; color: var(--muted); font-size: 12px; }
 .metric-mini b { font-size: 18px; }
+
+@media (max-width: 1240px) {
+  .container:has(.players-admin-shell) {
+    padding-inline: 0;
+  }
+}
 
 @media (max-width: 960px) {
   .players-admin-form { grid-template-columns: 1fr; }

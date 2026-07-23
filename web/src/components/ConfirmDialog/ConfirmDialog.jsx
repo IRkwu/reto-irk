@@ -29,7 +29,7 @@ export default function ConfirmDialog({
   const icon = variant === "danger" ? "mdi:alert-outline" : "mdi:help-circle-outline";
 
   return (
-    <div className="modal-backdrop confirm-backdrop" onClick={loading ? undefined : onCancel}>
+    <div className="modal-backdrop confirm-backdrop" onMouseDown={loading ? undefined : (event) => event.target === event.currentTarget && onCancel?.()}>
       <section
         className="confirm-dialog"
         ref={dialogRef}
@@ -63,7 +63,7 @@ export default function ConfirmDialog({
             className={`btn ${variant === "danger" ? "danger" : ""}`}
             type="button"
             disabled={loading}
-            onClick={onConfirm}
+              onClick={() => onConfirm?.()}
             title={nextConfirmLabel}
             aria-label={nextConfirmLabel}
           >

@@ -77,7 +77,7 @@ export default function ChallengeEventHistory({
   }
 
   return (
-    <div className="play-events-modal-backdrop" onClick={onCloseModal}>
+    <div className="play-events-modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onCloseModal()}>
       <div
         className="play-events-modal"
         ref={modalRef}

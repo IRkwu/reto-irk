@@ -5,7 +5,6 @@ export const DEFAULT_MODE_ID = "system";
 
 export const themePresets = [
   { id: "graphite", name: "Graphite" },
-  { id: "elegant-luxury", name: "Elegant Luxury" },
   { id: "kodama-grove", name: "Kodama Grove" },
   { id: "cosmic-night", name: "Cosmic Night" },
   { id: "bubblegum", name: "Bubblegum" },

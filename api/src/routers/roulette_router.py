@@ -3,7 +3,7 @@ import random
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.core.challenge_rules import MAX_DINOS_PER_PLAYER
+from src.core.challenge_rules import MAX_DINOS_PER_PLAYER, dino_is_available_for_game
 from src.core.security import get_current_admin
 from src.database.session import get_db
 from src.models.challenge import ChallengeStatus
@@ -52,7 +52,11 @@ def _available_dinos(db: Session, challenge_id: int) -> list:
     dinos = [
         dino_map.dino
         for dino_map in dino_maps
-        if dino_map.dino.is_active and dino_map.dino_id not in assigned_dino_ids
+        if (
+            dino_map.dino.is_active
+            and dino_map.dino_id not in assigned_dino_ids
+            and dino_is_available_for_game(challenge.game, dino_map.dino.game)
+        )
     ]
 
     return sorted(dinos, key=lambda dino: dino.name)
@@ -130,6 +134,12 @@ async def create_assignment_from_roulette(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="El dino no esta disponible para el mapa del desafio",
+        )
+
+    if not dino_is_available_for_game(challenge.game, dino.game):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El dino no esta disponible para el juego del desafio",
         )
 
     if assignment_repo.get_assignment_by_dino(

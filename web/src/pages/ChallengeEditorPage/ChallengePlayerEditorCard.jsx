@@ -1,10 +1,12 @@
 import AppSelect from "../../components/AppSelect/AppSelect.jsx";
 import { Icon } from "../../components/AppIcon/AppIcon.jsx";
+import DinoIcon from "../../components/DinoIcon/DinoIcon.jsx";
 import DinoCardGrid from "../../components/DinoCardGrid/DinoCardGrid.jsx";
 import Picker from "../../components/Picker/Picker.jsx";
 import PlayerAvatar from "../../components/PlayerAvatar/PlayerAvatar.jsx";
+import { DINO_PICKER_FALLBACK_URL } from "../../utils/dinoIcons";
 
-const DEFAULT_DINO_PICKER_ICON_URL = "/assets/icons/dino_picker_icon.webp";
+const DEFAULT_DINO_PICKER_ICON_URL = DINO_PICKER_FALLBACK_URL;
 const PLAYER_CARD_STYLE = { alignContent: "start" };
 
 export default function ChallengePlayerEditorCard({
@@ -96,7 +98,10 @@ export default function ChallengePlayerEditorCard({
           <Picker
             value={selectedDinoId || ""}
             options={dinoOptions}
-            iconUrl={DEFAULT_DINO_PICKER_ICON_URL}
+            variant="dino-grid"
+            getIcon={(option) => (
+              <DinoIcon dino={option?.value ? option : undefined} imageClassName="picker-thumb" iconClassName="picker-dino-fallback" fallbackImageUrl={DEFAULT_DINO_PICKER_ICON_URL} />
+            )}
             disabled={!canEditChallenge}
             onChange={(nextValue) => onSelectedDinoChange(challengePlayer.id, nextValue)}
           />

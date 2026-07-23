@@ -176,6 +176,28 @@
   justify-content: center;
 }
 
+@media (min-width: 1081px) {
+  .topbar-style-clean {
+    grid-template-columns: 240px minmax(0, 1fr) auto;
+  }
+
+  .topbar-style-clean .topbar-left {
+    overflow: hidden;
+  }
+
+  .topbar-style-clean .topbar-left .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .topbar-style-clean .topbar-nav {
+    display: grid;
+    grid-template-columns: repeat(4, max-content);
+    justify-content: start;
+  }
+}
+
 
 @media (max-width: 1080px) {
   .topbar-style-clean .topbar-right {

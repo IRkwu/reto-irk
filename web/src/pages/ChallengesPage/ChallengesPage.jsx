@@ -35,6 +35,18 @@ export default function ChallengesPage() {
     { value: "completed", label: t("challenges.filters.completed") },
     { value: "cancelled", label: t("challenges.filters.cancelled") },
   ];
+  const gameOptions = [
+    {
+      value: "ark_survival_evolved",
+      label: t("filters.games.evolvedMobile"),
+      icon: "/assets/icons/evolved.webp",
+    },
+    {
+      value: "ark_survival_ascended",
+      label: t("filters.games.ascendedMobile"),
+      icon: "/assets/icons/ascended.webp",
+    },
+  ];
   const [challenges, setChallenges] = useState([]);
   const [maps, setMaps] = useState([]);
   const [players, setPlayers] = useState([]);
@@ -46,11 +58,19 @@ export default function ChallengesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [draft, setDraft] = useState({
     name: "",
+    game: "ark_survival_evolved",
     mapId: "",
     playerIds: [],
   });
 
   const mapsById = useMemo(() => indexById(maps), [maps]);
+  const availableMaps = useMemo(
+    () =>
+      draft.game === "ark_survival_evolved"
+        ? maps.filter((map) => map.game === "ark_survival_evolved")
+        : maps,
+    [draft.game, maps]
+  );
   const visibleChallenges = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
@@ -105,7 +125,11 @@ export default function ChallengesPage() {
       setPlayers(playerData);
       setDraft((prev) => ({
         ...prev,
-        mapId: prev.mapId || mapData[0]?.id || "",
+        mapId:
+          prev.mapId ||
+          mapData.find((map) => map.game === "ark_survival_evolved")?.id ||
+          mapData[0]?.id ||
+          "",
       }));
     } catch (err) {
       setError(err.message || "Error al cargar retos");
@@ -127,10 +151,29 @@ export default function ChallengesPage() {
     setDraft((prev) => ({
       ...prev,
       name: prev.name || `Reto ${challenges.length + 1}`,
-      mapId: prev.mapId || maps[0]?.id || "",
+      mapId:
+        prev.mapId ||
+        maps.find((map) => map.game === "ark_survival_evolved")?.id ||
+        maps[0]?.id ||
+        "",
       playerIds: prev.playerIds.slice(0, 4),
     }));
     setModalOpen(true);
+  }
+
+  function selectGame(game) {
+    setDraft((prev) => {
+      const selectedMap = maps.find((map) => map.id === Number(prev.mapId));
+      const mapIsAvailable = game === "ark_survival_ascended" || selectedMap?.game === "ark_survival_evolved";
+
+      return {
+        ...prev,
+        game,
+        mapId: mapIsAvailable
+          ? prev.mapId
+          : maps.find((map) => map.game === "ark_survival_evolved")?.id || "",
+      };
+    });
   }
 
   function togglePlayer(playerId) {
@@ -174,6 +217,7 @@ export default function ChallengesPage() {
       const challenge = await challengeService.create({
         name: draft.name,
         map_id: mapId,
+        game: draft.game,
         player_count: draft.playerIds.length,
       });
 
@@ -267,7 +311,7 @@ export default function ChallengesPage() {
       </div>
 
       {modalOpen ? (
-        <div className="modal-backdrop" onClick={closeCreateModal}>
+        <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && closeCreateModal()}>
           <div
             className="challenge-modal"
             ref={createModalRef}
@@ -299,70 +343,103 @@ export default function ChallengesPage() {
             </label>
             </section>
 
-            <section className="challenge-modal-section">
-              <div className="modal-step-title">{t("challenges.modal.map")}</div>
-              <div className="map-card-grid" role="radiogroup" aria-label={t("challenges.modal.map")}>
-                {maps.map((map) => (
-                  <button
-                    className={`map-choice-card ${Number(draft.mapId) === map.id ? "selected" : ""}`}
-                    key={map.id}
-                    type="button"
-                    onClick={() => setDraft((prev) => ({ ...prev, mapId: map.id }))}
-                    title={t("challenges.modal.selectMap", { name: map.name })}
-                    aria-label={t("challenges.modal.selectMap", { name: map.name })}
-                    role="radio"
-                    aria-checked={Number(draft.mapId) === map.id}
-                  >
-                    {map.image_url ? (
-                      <img src={map.image_url} alt={map.name} />
-                    ) : (
-                      <div className="map-card-fallback">
-                        <Icon icon="mdi:map" width={34} aria-hidden="true" />
-                      </div>
-                    )}
-                    <span>{map.name}</span>
-                    <GameBadge game={map.game} className="map-choice-game" />
-                  </button>
-                ))}
-              </div>
-            </section>
-
-            <section className="challenge-modal-section player-count-card">
-              <div>
-                <div className="modal-step-title">{t("challenges.modal.players")}</div>
-                <div className="muted">{t("challenges.modal.playerHelp", { count: selectedPlayerCount || 0 })}</div>
-              </div>
-              <div className="player-count-pill">{selectedPlayerCount}/4</div>
-            </section>
-
-            <section className="challenge-modal-section">
-              <div className="modal-step-title">{t("challenges.modal.selectedPlayers")}</div>
-              <div className="player-choice-grid" role="group" aria-label={t("challenges.modal.selectedPlayers")}>
-                {activePlayers.map((player) => {
-                  const selected = draft.playerIds.includes(player.id);
-                  const disabled = !selected && draft.playerIds.length >= 4;
-                  const playerLabel = selected
-                    ? t("challenges.modal.removePlayer", { name: player.name })
-                    : t("challenges.modal.selectPlayer", { name: player.name });
-
-                  return (
+            <div className="challenge-modal-layout">
+              <section className="challenge-modal-section challenge-modal-map-panel">
+                <div className="modal-step-title">{t("challenges.modal.map")}</div>
+                <div className="map-card-grid" role="radiogroup" aria-label={t("challenges.modal.map")}>
+                    {availableMaps.map((map) => (
                     <button
-                      className={`player-choice-card ${selected ? "selected" : ""}`}
-                      key={player.id}
+                      className={`map-choice-card ${Number(draft.mapId) === map.id ? "selected" : ""}`}
+                      key={map.id}
                       type="button"
-                      disabled={disabled}
-                      onClick={() => togglePlayer(player.id)}
-                      title={playerLabel}
-                      aria-label={playerLabel}
-                      aria-pressed={selected}
+                      onClick={() => setDraft((prev) => ({ ...prev, mapId: map.id }))}
+                      title={t("challenges.modal.selectMap", { name: map.name })}
+                      aria-label={t("challenges.modal.selectMap", { name: map.name })}
+                      role="radio"
+                      aria-checked={Number(draft.mapId) === map.id}
                     >
-                      <PlayerAvatar player={player} className="player-choice-avatar" />
-                      <b>{player.name}</b>
+                      {map.image_url ? (
+                        <img src={map.image_url} alt={map.name} />
+                      ) : (
+                        <div className="map-card-fallback">
+                          <Icon icon="mdi:map" width={34} aria-hidden="true" />
+                        </div>
+                      )}
+                      <div className="map-choice-meta">
+                        <span>{map.name}</span>
+                        <GameBadge game={map.game} className="map-choice-game" />
+                      </div>
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
+              </section>
+
+              <div className="challenge-modal-side-panel">
+                <section className="challenge-modal-section">
+                  <div>
+                    <div className="modal-step-title">{t("challenges.modal.game")}</div>
+                  </div>
+                  <div className="game-choice-grid" role="radiogroup" aria-label={t("challenges.modal.game")}>
+                    {gameOptions.map((game) => {
+                      const selected = draft.game === game.value;
+
+                      return (
+                        <button
+                          className={`game-choice-card ${selected ? "selected" : ""}`}
+                          key={game.value}
+                          type="button"
+                          onClick={() => selectGame(game.value)}
+                          title={t("challenges.modal.selectGame", { name: game.label })}
+                          aria-label={t("challenges.modal.selectGame", { name: game.label })}
+                          role="radio"
+                          aria-checked={selected}
+                        >
+                          <img src={game.icon} alt="" aria-hidden="true" />
+                          <span>{game.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                <section className="challenge-modal-section player-count-card">
+                  <div>
+                    <div className="modal-step-title">{t("challenges.modal.players")}</div>
+                    <div className="muted">{t("challenges.modal.playerHelp", { count: selectedPlayerCount || 0 })}</div>
+                  </div>
+                  <div className="player-count-pill">{selectedPlayerCount}/4</div>
+                </section>
+
+                <section className="challenge-modal-section">
+                  <div className="modal-step-title">{t("challenges.modal.selectedPlayers")}</div>
+                  <div className="player-choice-grid" role="group" aria-label={t("challenges.modal.selectedPlayers")}>
+                    {activePlayers.map((player) => {
+                      const selected = draft.playerIds.includes(player.id);
+                      const disabled = !selected && draft.playerIds.length >= 4;
+                      const playerLabel = selected
+                        ? t("challenges.modal.removePlayer", { name: player.name })
+                        : t("challenges.modal.selectPlayer", { name: player.name });
+
+                      return (
+                        <button
+                          className={`player-choice-card ${selected ? "selected" : ""}`}
+                          key={player.id}
+                          type="button"
+                          disabled={disabled}
+                          onClick={() => togglePlayer(player.id)}
+                          title={playerLabel}
+                          aria-label={playerLabel}
+                          aria-pressed={selected}
+                        >
+                          <PlayerAvatar player={player} className="player-choice-avatar" />
+                          <b>{player.name}</b>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
               </div>
-            </section>
+            </div>
 
             <div className="modal-actions">
               <button className="btn ghost" onClick={() => setModalOpen(false)} disabled={creating} title={t("common.cancel")} aria-label={t("challenges.modal.close")}>

@@ -12,7 +12,7 @@ from src.repositories import challenge_player_repository as player_repo
 from src.repositories import challenge_repository as challenge_repo
 from src.repositories import map_repository as map_repo
 from src.repositories import spawn_zone_repository as spawn_zone_repo
-from src.schemas.challenge import ChallengeCreate, ChallengeRead, ChallengeUpdate
+from src.schemas.challenge import ChallengeCreate, ChallengeGame, ChallengeRead, ChallengeUpdate
 from src.utils.websocket_manager import websocket_manager
 
 router = APIRouter(prefix="/challenges", tags=["challenges"])
@@ -32,11 +32,24 @@ def _validate_map_and_spawn_zone(
     db: Session,
     map_id: int | None,
     spawn_zone_id: int | None,
+    game: str | None = None,
 ) -> None:
-    if map_id is not None and map_repo.get_map(db, map_id) is None:
+    selected_map = map_repo.get_map(db, map_id) if map_id is not None else None
+
+    if map_id is not None and selected_map is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Mapa no encontrado",
+        )
+
+    if (
+        selected_map is not None
+        and game == "ark_survival_evolved"
+        and selected_map.game != "ark_survival_evolved"
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Un desafio Evolved solo puede usar mapas Evolved",
         )
 
     if spawn_zone_id is not None:
@@ -60,6 +73,7 @@ def list_challenges(
     limit: int = Query(100, ge=1, le=200),
     status_filter: ChallengeStatus | None = Query(default=None, alias="status"),
     map_id: int | None = None,
+    game: ChallengeGame | None = None,
     spawn_zone_id: int | None = None,
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_admin),
@@ -70,6 +84,7 @@ def list_challenges(
         limit=limit,
         status=status_filter,
         map_id=map_id,
+        game=game,
         spawn_zone_id=spawn_zone_id,
     )
 
@@ -91,6 +106,7 @@ def create_challenge(
         db=db,
         map_id=challenge_data.map_id,
         spawn_zone_id=challenge_data.spawn_zone_id,
+        game=challenge_data.game,
     )
 
     return challenge_repo.create_challenge(db, challenge_data)
@@ -121,6 +137,7 @@ def update_challenge(
         db=db,
         map_id=map_id,
         spawn_zone_id=spawn_zone_id,
+        game=challenge.game,
     )
 
     return challenge_repo.update_challenge(db, challenge, challenge_data)

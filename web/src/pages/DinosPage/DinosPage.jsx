@@ -22,11 +22,13 @@ const gameOptions = [
     value: "ark_survival_evolved",
     label: "Ark Survival Evolved",
     mobileLabel: "Evolved",
+    icon_url: "/assets/icons/evolved.webp",
   },
   {
     value: "ark_survival_ascended",
     label: "Ark Survival Ascended",
     mobileLabel: "Ascended",
+    icon_url: "/assets/icons/ascended.webp",
   },
 ];
 
@@ -321,7 +323,7 @@ export default function DinosPage() {
       </div>
 
       {modalOpen ? (
-        <div className="modal-backdrop" onClick={closeModal}>
+        <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && closeModal()}>
           <form
             className="challenge-modal dino-admin-modal"
             ref={dinoModalRef}
@@ -372,7 +374,7 @@ export default function DinosPage() {
                     role="radio"
                     aria-checked={form.game === game.value}
                   >
-                    <Icon icon="mdi:controller-classic-outline" width={22} aria-hidden="true" />
+                    <img src={game.icon_url} alt="" aria-hidden="true" />
                     <span>{game.label}</span>
                   </button>
                 ))}

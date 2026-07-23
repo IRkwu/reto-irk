@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from enum import StrEnum
 
-from sqlalchemy import Date, DateTime, Enum, ForeignKey, Integer, String, func
+from sqlalchemy import CheckConstraint, Date, DateTime, Enum, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.challenge_rules import DEFAULT_PLAYER_COUNT
@@ -15,10 +15,17 @@ class ChallengeStatus(StrEnum):
 
 class Challenge(Base):
     __tablename__ = "challenges"
+    __table_args__ = (
+        CheckConstraint(
+            "game IN ('ark_survival_evolved', 'ark_survival_ascended')",
+            name="ck_challenges_game_domain",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     map_id: Mapped[int] = mapped_column(ForeignKey("maps.id"), nullable=False, index=True)
+    game: Mapped[str] = mapped_column(String(100), default="ark_survival_evolved", nullable=False, index=True)
     spawn_zone_id: Mapped[int | None] = mapped_column(ForeignKey("spawn_zones.id"), nullable=True, index=True)
     status: Mapped[ChallengeStatus] = mapped_column(Enum(ChallengeStatus), default=ChallengeStatus.draft, nullable=False, index=True)
     player_count: Mapped[int] = mapped_column(Integer, default=DEFAULT_PLAYER_COUNT, nullable=False)

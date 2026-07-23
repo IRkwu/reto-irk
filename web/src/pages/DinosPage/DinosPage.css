@@ -202,6 +202,13 @@ img.dino-admin-image {
   color: var(--accent);
   flex: 0 0 auto;
 }
+.game-choice-card img {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  object-fit: contain;
+}
 .game-choice-card:hover,
 .game-choice-card.selected {
   border-color: var(--accent);

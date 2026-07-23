@@ -21,6 +21,11 @@ function getFocusableElements(root) {
 
 export function useModalAccessibility(open, onClose) {
   const dialogRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) {
@@ -36,7 +41,7 @@ export function useModalAccessibility(open, onClose) {
     function handleKeyDown(event) {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose?.();
+        onCloseRef.current?.();
         return;
       }
 
@@ -71,7 +76,7 @@ export function useModalAccessibility(open, onClose) {
       document.removeEventListener("keydown", handleKeyDown);
       previousFocus?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   return dialogRef;
 }

@@ -88,6 +88,19 @@
   scrollbar-width: thin;
 }
 
+.app-select-menu.is-up {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+.app-select-menu.is-fixed {
+  position: fixed;
+  top: 0;
+  right: auto;
+  bottom: auto;
+  left: 0;
+}
+
 .app-select-menu::-webkit-scrollbar {
   width: 10px;
 }

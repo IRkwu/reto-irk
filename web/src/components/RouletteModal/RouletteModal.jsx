@@ -2,14 +2,25 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "../AppIcon/AppIcon.jsx";
 import "./RouletteModal.css";
 
-const ITEM_WIDTH = 132;
-const ITEM_GAP = -8;
+const ITEM_WIDTH = 124;
+const ITEM_GAP = -38;
 const STRIDE = ITEM_WIDTH + ITEM_GAP;
+const SCALE_DECAY = 0.88;
+const MAX_VISUAL_OFFSET = STRIDE / (1 - SCALE_DECAY);
 const SPIN_DURATION = 5200;
 const VISUAL_ROLL_LENGTH = 96;
 const VISUAL_TAIL_LENGTH = 32;
 const SPIN_START_INDEX = 18;
 const INITIAL_VISUAL_LENGTH = 56;
+
+function getViewportScale() {
+  if (typeof window === "undefined") {
+    return 1;
+  }
+
+  const progress = Math.min(1, Math.max(0, (window.innerWidth - 1360) / 560));
+  return 1 + progress * 0.18;
+}
 
 function getItemName(item) {
   return item?.name || item?.label || "Resultado";
@@ -62,6 +73,7 @@ export default function RouletteModal({
   const [winningItemId, setWinningItemId] = useState(null);
   const [winningIndex, setWinningIndex] = useState(null);
   const [visualPool, setVisualPool] = useState([]);
+  const [viewportScale, setViewportScale] = useState(getViewportScale);
   const animationFrameRef = useRef(null);
   const repeatedPool = useMemo(() => {
     if (!pool.length) {
@@ -84,6 +96,23 @@ export default function RouletteModal({
   }, [open, repeatedPool]);
 
   useEffect(() => () => window.cancelAnimationFrame(animationFrameRef.current), []);
+
+  useEffect(() => {
+    let resizeFrame = null;
+
+    const updateViewportScale = () => {
+      window.cancelAnimationFrame(resizeFrame);
+      resizeFrame = window.requestAnimationFrame(() => setViewportScale(getViewportScale()));
+    };
+
+    updateViewportScale();
+    window.addEventListener("resize", updateViewportScale);
+
+    return () => {
+      window.removeEventListener("resize", updateViewportScale);
+      window.cancelAnimationFrame(resizeFrame);
+    };
+  }, []);
 
   async function handleRoll() {
     if (spinning || pool.length === 0) {
@@ -141,9 +170,15 @@ export default function RouletteModal({
     return null;
   }
 
+  const centeredIndex = Math.round(offset / STRIDE);
+
   return (
     <div className="roulette-overlay" onClick={() => !spinning && onClose()}>
-      <div className="roulette-modal" onClick={(event) => event.stopPropagation()}>
+      <div
+        className="roulette-modal"
+        style={{ "--roulette-viewport-scale": viewportScale }}
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="roulette-header">
           <div>
             <div className="h2">{title}</div>
@@ -169,18 +204,28 @@ export default function RouletteModal({
           >
             {visualPool.map((item, index) => {
               const isWinner = winningItemId === item.id && index === winningIndex;
-              const distance = Math.min(Math.abs(index * STRIDE - offset) / STRIDE, 4);
-              const scale = Math.max(0.66, 1.1 - distance * 0.12);
-              const opacity = Math.max(0.3, 1 - distance * 0.16);
-              const zIndex = Math.round((5 - distance) * 10);
+              const delta = index * STRIDE - offset;
+              const distance = Math.abs(delta) / STRIDE;
+              const decay = Math.pow(SCALE_DECAY, distance);
+              const scale = Math.max(0.12, 1.18 * decay);
+              const opacity = Math.max(0.08, Math.pow(0.84, distance));
+              const compressedDelta = Math.sign(delta) * MAX_VISUAL_OFFSET * (1 - decay);
+              const shiftX = compressedDelta - delta;
+              const depthY = Math.min(distance * 2.5, 20);
+              const tilt = Math.sign(delta) * -Math.min(5 + distance * 0.75, 12);
+              const zIndex = Math.max(1, Math.round((6 - distance) * 10));
+              const isCentered = index === centeredIndex;
 
               return (
                 <div
-                  className={`roulette-item ${isWinner ? "winner" : ""}`}
+                  className={`roulette-item ${isCentered ? "centered" : ""} ${isWinner ? "winner" : ""}`}
                   key={`${item?.id ?? "option"}-${index}`}
                   style={{
                     "--roulette-scale": scale,
                     "--roulette-opacity": opacity,
+                    "--roulette-shift-x": `${shiftX}px`,
+                    "--roulette-depth-y": `${depthY}px`,
+                    "--roulette-tilt": `${tilt}deg`,
                     zIndex,
                   }}
                 >

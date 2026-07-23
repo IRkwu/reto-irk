@@ -25,6 +25,7 @@
 .overlay-renderer.preview .overlay-widget {
   cursor: move;
   outline: 1px dashed color-mix(in srgb, var(--accent) 60%, transparent);
+  touch-action: none;
 }
 
 .overlay-widget-resize {
@@ -40,6 +41,7 @@
   box-shadow: var(--shadow);
   cursor: nwse-resize;
   pointer-events: auto;
+  touch-action: none;
 }
 
 .overlay-widget-resize::before {

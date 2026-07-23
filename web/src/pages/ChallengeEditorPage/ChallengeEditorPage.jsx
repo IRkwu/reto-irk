@@ -7,6 +7,7 @@ import Skeleton from "../../components/Skeleton/Skeleton.jsx";
 import StatusBadge from "../../components/StatusBadge/StatusBadge.jsx";
 import ZoneRouletteModal from "../../components/ZoneRouletteModal/ZoneRouletteModal.jsx";
 import { Icon } from "../../components/AppIcon/AppIcon.jsx";
+import GameBadge from "../../components/GameBadge/GameBadge.jsx";
 import { assignmentService } from "../../services/assignmentService";
 import { challengePlayerService, challengeService } from "../../services/challengeService";
 import { dinoService } from "../../services/dinoService";
@@ -89,6 +90,10 @@ export default function ChallengeEditorPage() {
         ]);
       const dinoData = await dinoService.list({
         id_map: challengeData.map_id,
+        is_active: true,
+        ...(challengeData.game === "ark_survival_evolved"
+          ? { game: "ark_survival_evolved" }
+          : {}),
         limit: 200,
       });
 
@@ -287,6 +292,7 @@ export default function ChallengeEditorPage() {
               <div className="muted">
                 {mapName} - {challenge.player_count} jugadores
               </div>
+              <GameBadge game={challenge.game} />
             </div>
             <div className="row">
               <StatusBadge status={challenge.status} />

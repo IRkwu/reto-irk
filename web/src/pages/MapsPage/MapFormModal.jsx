@@ -6,7 +6,7 @@ export default function MapFormModal({ mode, selectedMap, modalRef, onClose, onS
   }
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <form
         className="challenge-modal map-admin-modal"
         ref={modalRef}

@@ -43,7 +43,7 @@ export default function SettingsPanel() {
   }
 
   const panel = open ? createPortal(
-    <div className="settings-backdrop" onClick={closePanel}>
+    <div className="settings-backdrop" onMouseDown={(event) => event.target === event.currentTarget && closePanel()}>
       <aside
         className="settings-panel"
         ref={panelRef}
@@ -202,7 +202,7 @@ function SettingChoice({ label, value, options, onChange, optionLabelKeyPrefix =
   return (
     <fieldset className="settings-group">
       <legend>{label}</legend>
-      <div className="settings-choice-grid">
+      <div className={`settings-choice-grid ${options.length === 3 ? "three" : "two"}`}>
         {options.map((option) => {
           const optionName = optionLabelKeyPrefix
             ? t(`${optionLabelKeyPrefix}.${option.id === "icons-only" ? "iconsOnly" : option.id}`)

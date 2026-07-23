@@ -16,6 +16,7 @@ def list_challenges(
     limit: int = 100,
     status: ChallengeStatus | str | None = None,
     map_id: int | None = None,
+    game: str | None = None,
     spawn_zone_id: int | None = None,
 ) -> list[Challenge]:
     query = db.query(Challenge).options(selectinload(Challenge.assignments))
@@ -25,6 +26,9 @@ def list_challenges(
 
     if map_id is not None:
         query = query.filter(Challenge.map_id == map_id)
+
+    if game is not None:
+        query = query.filter(Challenge.game == game)
 
     if spawn_zone_id is not None:
         query = query.filter(Challenge.spawn_zone_id == spawn_zone_id)

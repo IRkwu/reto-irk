@@ -1,8 +1,9 @@
 .map-card-grid {
-  --modal-map-image-size: 104px;
+  --modal-map-image-size: 128px;
+  --modal-map-min-card-width: 124px;
   --modal-map-row-height: 174px;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--modal-map-min-card-width)), 1fr));
   grid-auto-rows: var(--modal-map-row-height);
   gap: 8px;
   justify-content: stretch;
@@ -33,12 +34,83 @@
   gap: 10px;
   min-width: 0;
 }
+.challenge-modal-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, .85fr) minmax(0, 1.5fr);
+  gap: 14px;
+  align-items: start;
+}
+.challenge-modal-map-panel,
+.challenge-modal-side-panel {
+  min-width: 0;
+}
+.challenge-modal-map-panel {
+  grid-column: 2;
+  grid-row: 1;
+}
+.challenge-modal-map-panel {
+  padding: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--control-soft);
+}
+.challenge-modal-side-panel {
+  grid-column: 1;
+  grid-row: 1;
+  display: grid;
+  gap: 14px;
+}
+.game-choice-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px;
+}
+.game-choice-card {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  gap: 4px 10px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--control);
+  color: var(--text-strong);
+  text-align: left;
+  cursor: pointer;
+}
+.game-choice-card:hover,
+.game-choice-card.selected {
+  border-color: var(--accent);
+  background: rgba(125, 211, 252, .1);
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, .18);
+}
+.game-choice-card img {
+  grid-row: 1 / -1;
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  background: transparent;
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, .22));
+}
+.game-choice-card > span {
+  min-width: 0;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.game-choice-card .game-badge {
+  justify-self: start;
+}
 .map-choice-card {
   min-height: 0;
   height: 100%;
   width: 100%;
   display: grid;
-  grid-template-rows: auto auto auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   align-content: start;
   gap: 7px;
   padding: 7px;
@@ -64,6 +136,7 @@
   border-radius: 8px;
   object-fit: cover;
   background: var(--surface-deep);
+  align-self: start;
 }
 .map-card-fallback {
   display: flex;
@@ -71,7 +144,15 @@
   justify-content: center;
   color: var(--accent);
 }
-.map-choice-card span {
+.map-choice-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+  align-self: end;
+}
+.map-choice-meta > span {
   min-width: 0;
   max-width: 100%;
   font-weight: 900;
@@ -80,6 +161,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   overflow-wrap: anywhere;
+}
+.map-choice-meta .map-choice-game {
+  flex: 0 0 auto;
+  margin-left: auto;
 }
 .map-choice-card .map-choice-game {
   justify-self: start;
@@ -100,6 +185,7 @@
 }
 .player-count-card {
   grid-template-columns: minmax(0, 1fr) auto;
+  padding: 12px;
 }
 .player-count-pill {
   min-width: 74px;
@@ -120,13 +206,13 @@
 .player-choice-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: 6px;
 }
 .player-choice-card {
   display: grid;
-  gap: 8px;
+  gap: 5px;
   justify-items: center;
-  padding: 14px 10px;
+  padding: 8px 4px;
   border: 1px solid var(--line-strong);
   border-radius: 12px;
   background: var(--control);
@@ -134,12 +220,12 @@
   cursor: pointer;
 }
 .player-choice-avatar {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: 8px;
   background: var(--surface-deep);
   color: var(--accent);
   font-weight: 900;
@@ -152,6 +238,8 @@
 }
 .player-choice-card b {
   max-width: 100%;
+  font-size: 12px;
+  line-height: 1.1;
   overflow-wrap: anywhere;
 }
 .player-choice-card.selected {
@@ -230,6 +318,7 @@
 
 .container:has(.challenges-shell) {
   width: min(1440px, 92vw);
+  padding-inline: 18px;
 }
 .challenges-shell .btn,
 .challenge-page-actions .btn,
@@ -312,7 +401,7 @@
 }
 .challenge-modal::-webkit-scrollbar-thumb {
   border: 2px solid var(--panel-soft);
-  border-radius: 999px;
+  border-radius: 8px;
   background: var(--line-hover);
 }
 .challenge-modal::-webkit-scrollbar-thumb:hover {
@@ -348,13 +437,39 @@
   .map-card-grid {
     --modal-map-image-size: 118px;
     --modal-map-row-height: 188px;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .player-choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .modal-slider-card,
   .lives-config {
     grid-template-columns: 1fr;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 860px) {
+  .challenge-modal-layout {
+    grid-template-columns: 1fr;
+  }
+  .challenge-modal-map-panel,
+  .challenge-modal-side-panel {
+    grid-column: 1;
+  }
+  .challenge-modal-side-panel {
+    grid-row: 1;
+  }
+  .challenge-modal-map-panel {
+    grid-row: 2;
+  }
+  .game-choice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .player-choice-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1240px) {
+  .container:has(.challenges-shell) {
+    padding-inline: 0;
   }
 }
 
@@ -414,16 +529,48 @@
 }
 
 @media (max-width: 520px) {
+  .challenge-modal .modal-head {
+    position: relative;
+    align-items: flex-start;
+    flex-direction: row;
+    padding-right: 48px;
+  }
+  .challenge-modal .modal-head .icon-only {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .challenge-modal .modal-actions {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .challenge-modal .modal-actions .btn {
+    width: auto;
+  }
+  .game-choice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .game-choice-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    justify-items: center;
+    gap: 4px;
+    padding: 8px 5px;
+    text-align: center;
+  }
+  .game-choice-card img {
+    grid-row: auto;
+    width: 48px;
+    height: 48px;
+  }
   .map-card-grid {
     --modal-map-image-size: 112px;
     --modal-map-row-height: 184px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     max-height: min(40vh, 320px);
   }
-  .player-choice-grid { grid-template-columns: 1fr; }
-  .player-count-card {
-    grid-template-columns: 1fr;
-  }
+  .player-choice-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .player-count-card { grid-template-columns: minmax(0, 1fr) auto; }
   .player-count-pill {
     width: 100%;
   }

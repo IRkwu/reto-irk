@@ -17,8 +17,7 @@
   gap: 10px;
   flex-wrap: wrap;
 }
-.topbar-right:has(.maps-page-actions.editing) .theme-switcher,
-.topbar-right:has(.maps-page-actions.editing) > .icon-text {
+.topbar-right:has(.maps-page-actions.editing) .theme-switcher {
   display: none;
 }
 .maps-page-actions .btn {
@@ -130,7 +129,7 @@
   width: 100%;
   min-height: 0;
   display: grid;
-  grid-template-rows: auto auto auto;
+  grid-template-rows: minmax(0, 1fr);
   gap: 8px;
   padding: 10px;
   border: 1px solid var(--line-strong);
@@ -139,6 +138,26 @@
   color: var(--text-strong);
   text-align: left;
   cursor: pointer;
+  position: relative;
+}
+.map-admin-select {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.map-admin-select:focus-visible {
+  border-radius: 6px;
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 .maps-admin-shell.editing .map-admin-card {
   background: var(--control-soft);
@@ -186,6 +205,20 @@
   color: var(--text-soft);
   font-size: 12px;
   font-weight: 800;
+}
+.map-admin-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+}
+.map-admin-actions .btn {
+  width: 38px;
+  min-width: 38px;
+  min-height: 36px;
+  padding: 0;
 }
 
 html[data-density="compact"] .maps-card-grid {
@@ -350,6 +383,7 @@ html[data-density="compact"] .maps-card-grid {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: bolder;
 }
 .map-dino-chip img {
   width: 28px;
@@ -358,7 +392,8 @@ html[data-density="compact"] .maps-card-grid {
   object-fit: cover;
 }
 .map-dino-chip svg {
-  color: var(--accent);
+  color: inherit;
+  fill: currentColor;
 }
 .map-dino-remove {
   width: 28px;
@@ -447,6 +482,20 @@ html[data-density="compact"] .maps-card-grid {
   .map-admin-card {
     gap: 7px;
     padding: 8px;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  .map-admin-select {
+    padding-bottom: 0;
+  }
+  .map-admin-actions {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .map-admin-actions .btn {
+    width: 100%;
+    min-width: 0;
   }
   .map-admin-name {
     font-size: 13px;
@@ -479,6 +528,9 @@ html[data-density="compact"] .maps-card-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
+  }
+  .maps-page-actions.editing {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .maps-page-actions .btn {
     width: 100%;
