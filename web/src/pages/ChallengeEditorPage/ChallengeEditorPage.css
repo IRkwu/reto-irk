@@ -52,6 +52,12 @@ html:not([data-density="compact"]) .container:has(.editor-shell) {
   color: var(--text-strong);
 }
 
+.editor-config-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
 html:not([data-density="compact"]) .editor-config-card,
 html:not([data-density="compact"]) .editor-player-card {
   padding: 16px;
@@ -191,7 +197,7 @@ html:not([data-density="compact"]) .editor-player-card .challenge-dino-card-grid
   }
   .editor-config-card .section-head > :first-child {
     min-width: 0;
-    padding-right: 126px;
+    padding-right: 200px;
   }
   .editor-config-card .section-head > .row {
     display: grid;
@@ -210,7 +216,7 @@ html:not([data-density="compact"]) .editor-player-card .challenge-dino-card-grid
     top: 2px;
     right: 0;
     width: auto;
-    max-width: 118px;
+    max-width: none;
   }
   .editor-config-card .section-head > .row .btn {
     padding-inline: 8px;
@@ -245,7 +251,14 @@ html:not([data-density="compact"]) .editor-player-card .challenge-dino-card-grid
     grid-template-columns: 1fr;
   }
   .editor-config-card .section-head > :first-child {
-    padding-right: 112px;
+    padding-right: 0;
+  }
+  .editor-config-card .section-head > .row > :first-child {
+    position: static;
+    grid-column: 1 / -1;
+    justify-self: end;
+    width: auto;
+    max-width: none;
   }
   .editor-config-card .section-head > .row {
     margin-top: 12px;

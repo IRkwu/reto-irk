@@ -192,7 +192,7 @@ html:not([data-density="compact"]) .play-lives-card {
   grid-template-columns: auto 58px 58px;
   grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-areas:
-    "status minus plus"
+    "badges minus plus"
     ". . ."
     "tamed tamed tamed";
   justify-items: end;
@@ -233,8 +233,15 @@ html:not([data-density="compact"]) .play-lives-card {
   align-items: center;
   box-sizing: border-box;
 }
+.play-challenge-badges {
+  grid-area: badges;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.play-lives-card .lives-controls .game-badge,
 .play-lives-card .lives-controls .status-badge {
-  grid-area: status;
   height: 30px;
   min-height: 30px;
   max-height: 30px;

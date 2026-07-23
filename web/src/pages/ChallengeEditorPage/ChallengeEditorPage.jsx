@@ -292,10 +292,12 @@ export default function ChallengeEditorPage() {
               <div className="muted">
                 {mapName} - {challenge.player_count} jugadores
               </div>
-              <GameBadge game={challenge.game} />
             </div>
             <div className="row">
-              <StatusBadge status={challenge.status} />
+              <div className="editor-config-badges">
+                <GameBadge game={challenge.game} />
+                <StatusBadge status={challenge.status} />
+              </div>
               {canStartChallenge ? (
                 <button
                   className="btn editor-start-button"

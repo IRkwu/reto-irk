@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "../../components/AppIcon/AppIcon.jsx";
 import { useParams } from "react-router-dom";
 import DinoCardGrid from "../../components/DinoCardGrid/DinoCardGrid.jsx";
+import GameBadge from "../../components/GameBadge/GameBadge.jsx";
 import Layout from "../../components/Layout/Layout.jsx";
 import PlayerAvatar from "../../components/PlayerAvatar/PlayerAvatar.jsx";
 import Skeleton from "../../components/Skeleton/Skeleton.jsx";
@@ -193,7 +194,10 @@ export default function ChallengePlayPage() {
               <Icon icon="mdi:check-circle-outline" width={16} aria-hidden="true" />
               {progress.completed} / {progress.total} tameados
             </span>
-            <StatusBadge status={challenge.status} />
+            <div className="play-challenge-badges">
+              <GameBadge game={challenge.game} />
+              <StatusBadge status={challenge.status} />
+            </div>
             {canEditGameplay ? (
               <>
                 <button
