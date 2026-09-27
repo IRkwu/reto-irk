@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "../AppIcon/AppIcon.jsx";
+import AssetImage from "../AssetImage/AssetImage.jsx";
 import "./Picker.css";
 
 export default function Picker({
@@ -104,7 +105,14 @@ export default function Picker({
     const imageUrl = option?.image_url || option?.icon_url || iconUrl;
 
     if (imageUrl) {
-      return <img className="picker-thumb" src={imageUrl} alt="" />;
+      return (
+        <AssetImage
+          className="picker-thumb"
+          src={imageUrl}
+          alt=""
+          fallback={<Icon icon={option?.icon || icon} width={18} aria-hidden="true" />}
+        />
+      );
     }
 
     return <Icon icon={option?.icon || icon} width={18} aria-hidden="true" />;

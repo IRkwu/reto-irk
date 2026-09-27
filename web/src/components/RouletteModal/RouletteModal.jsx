@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "../AppIcon/AppIcon.jsx";
+import AssetImage from "../AssetImage/AssetImage.jsx";
+import { getDinoImageUrl } from "../../utils/dinoIcons";
 import "./RouletteModal.css";
 
 const ITEM_WIDTH = 124;
@@ -229,13 +231,17 @@ export default function RouletteModal({
                     zIndex,
                   }}
                 >
-                  {item.image_url ? (
-                    <img src={item.image_url} alt="" />
-                  ) : (
-                    <span className="roulette-item-icon">
-                      <Icon icon="mdi:map-marker-radius-outline" width={22} aria-hidden="true" />
-                    </span>
-                  )}
+                  <AssetImage
+                    src={item?.image_url}
+                    sources={[getDinoImageUrl(item?.name || item?.label)]}
+                    alt=""
+                    ariaHidden="true"
+                    fallback={(
+                      <span className="roulette-item-icon">
+                        <Icon icon="mdi:map-marker-radius-outline" width={22} aria-hidden="true" />
+                      </span>
+                    )}
+                  />
                 </div>
               );
             })}

@@ -1,4 +1,3 @@
-const DINO_ICON_BASE = "/assets/dinos_icons";
 export const DINO_PICKER_FALLBACK_URL = "/assets/icons/dino_picker_icon.webp";
 
 function normalizeDinoName(name) {
@@ -12,5 +11,10 @@ function normalizeDinoName(name) {
 
 export function getDinoIconUrl(name) {
   const slug = normalizeDinoName(name);
-  return slug ? `${DINO_ICON_BASE}/${slug}.webp` : null;
+  return slug ? `/assets/dinos_icons/${slug}.webp` : null;
+}
+
+export function getDinoImageUrl(name) {
+  const slug = normalizeDinoName(name);
+  return slug ? `/assets/dinos/${slug}.webp` : null;
 }

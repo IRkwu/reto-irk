@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "../AppIcon/AppIcon.jsx";
+import AssetImage from "../AssetImage/AssetImage.jsx";
+import DinoImage from "../DinoImage/DinoImage.jsx";
 import {
   defaultOverlayConfig,
   getOverlayBaseScale,
@@ -7,7 +9,7 @@ import {
   overlayWidgetOrder,
 } from "../../utils/overlayConfig";
 import { useI18n } from "../../i18n";
-import { resolveAssetUrl } from "../../services/apiClient";
+import { getDinoImageUrl } from "../../utils/dinoIcons";
 import "./OverlayRenderer.css";
 
 const notificationEventTypes = [
@@ -311,16 +313,13 @@ export default function OverlayRenderer({
           {players.length ? (
             players.map((player) => (
               <div className="obs-player-row" key={player.id_player || player.id || player.player_id || player.name}>
-                {resolveAssetUrl(player.player_icon_url || player.icon_url) ? (
-                  <img
-                    className="obs-player-icon"
-                    src={resolveAssetUrl(player.player_icon_url || player.icon_url)}
-                    alt=""
-                    aria-hidden="true"
-                  />
-                ) : (
-                  <span className="obs-player-icon fallback">{getPlayerInitial(player.player_name || player.name)}</span>
-                )}
+                <AssetImage
+                  className="obs-player-icon"
+                  src={player.player_icon_url || player.icon_url}
+                  alt=""
+                  ariaHidden="true"
+                  fallback={<span className="obs-player-icon fallback">{getPlayerInitial(player.player_name || player.name)}</span>}
+                />
                 {showNames ? <b>{player.player_name || player.name || t("obsConfig.fallbackPlayer")}</b> : null}
               </div>
             ))
@@ -354,7 +353,6 @@ export default function OverlayRenderer({
 
 function EventToast({ event, phase = "visible", accentPosition = "left" }) {
   const { t } = useI18n();
-  const dinoImageUrl = resolveAssetUrl(event.dino_image_url);
   const eventTitle = event.message || event.dino_name || event.event_type;
   const eventDetails = [
     event.player_name ? `${event.player_name}` : "",
@@ -364,18 +362,18 @@ function EventToast({ event, phase = "visible", accentPosition = "left" }) {
 
   return (
     <div className={`obs-toast ${event.event_type} ${phase} accent-${accentPosition}`.trim()}>
-      {dinoImageUrl ? (
-        <img
-          className="toast-dino-image"
-          src={dinoImageUrl}
-          alt=""
-          aria-hidden="true"
-        />
-      ) : eventIcons[event.event_type] ? (
-        <span className="toast-event-icon">
-          <Icon icon={eventIcons[event.event_type]} width={26} aria-hidden="true" />
-        </span>
-      ) : null}
+      <DinoImage
+        src={event.dino_image_url}
+        sources={[getDinoImageUrl(event.dino_name)]}
+        className="toast-dino-image"
+        alt=""
+        ariaHidden="true"
+        fallback={eventIcons[event.event_type] ? (
+          <span className="toast-event-icon">
+            <Icon icon={eventIcons[event.event_type]} width={26} aria-hidden="true" />
+          </span>
+        ) : null}
+      />
       <div className="toast-text">
         <div className="toast-name">{eventTitle}</div>
         {eventDetails ? <div className="toast-player">{eventDetails}</div> : null}

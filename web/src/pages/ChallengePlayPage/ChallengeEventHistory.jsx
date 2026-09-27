@@ -1,5 +1,7 @@
 import { Icon } from "../../components/AppIcon/AppIcon.jsx";
+import DinoImage from "../../components/DinoImage/DinoImage.jsx";
 import { formatEventDate, parseEventDate } from "../../utils/formatters";
+import { getDinoImageUrl } from "../../utils/dinoIcons";
 
 const eventIcons = {
   life_decreased: "mdi:heart-minus-outline",
@@ -194,8 +196,14 @@ function EventRow({ event, playersById, dinosById, showDate = true }) {
   return (
     <div className={`recent-event-row ${tone}`}>
       <span className="recent-event-icon">
-        {["dino_tamed", "dino_untamed"].includes(event.event_type) && dino?.image_url ? (
-          <img className="recent-event-dino-image" src={dino.image_url} alt="" />
+        {["dino_tamed", "dino_untamed"].includes(event.event_type) ? (
+          <DinoImage
+            src={dino?.image_url}
+            sources={[getDinoImageUrl(dino?.name)]}
+            className="recent-event-dino-image"
+            ariaHidden="true"
+            fallback={<Icon icon={eventIcons[event.event_type] || "mdi:history"} width={20} aria-hidden="true" />}
+          />
         ) : (
           <Icon icon={eventIcons[event.event_type] || "mdi:history"} width={20} aria-hidden="true" />
         )}

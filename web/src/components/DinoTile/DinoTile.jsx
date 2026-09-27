@@ -1,4 +1,7 @@
+import DinoImage from "../DinoImage/DinoImage.jsx";
+import { getDinoImageUrl } from "../../utils/dinoIcons";
 import "./DinoTile.css";
+
 export default function DinoTile({ dino, done, busy, disabled, onClick, action, actionLabel }) {
   return (
     <button
@@ -10,11 +13,13 @@ export default function DinoTile({ dino, done, busy, disabled, onClick, action, 
       aria-label={actionLabel || dino?.name || "Dino"}
     >
       <div className="tile-imgwrap">
-        {dino?.image_url ? (
-          <img className="tile-img" src={dino.image_url} alt={dino.name} />
-        ) : (
-          <div className="tile-img ph" />
-        )}
+        <DinoImage
+          src={dino?.image_url}
+          sources={[getDinoImageUrl(dino?.name)]}
+          className="tile-img"
+          alt={dino?.name || "Dino"}
+          fallback={<div className="tile-img ph" />}
+        />
       </div>
       <div className="tile-name">{dino?.name || "Dino"}</div>
       {action ? <div className="tile-action">{action}</div> : null}

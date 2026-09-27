@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "../../components/AppIcon/AppIcon.jsx";
+import AssetImage from "../../components/AssetImage/AssetImage.jsx";
 import ChallengeCard from "../../components/ChallengeCard/ChallengeCard.jsx";
 import DashboardWidgets from "../../components/DashboardWidgets/DashboardWidgets.jsx";
 import EmptyState from "../../components/EmptyState/EmptyState.jsx";
@@ -18,6 +19,7 @@ import {
 import { mapService } from "../../services/mapService";
 import { playerService } from "../../services/playerService";
 import { indexById } from "../../utils/formatters";
+import { getMapImageUrl } from "../../utils/mapImages";
 import { getStoredPageFilters, savePageFilters } from "../../utils/pageFilters";
 import "./ChallengesPage.css";
 
@@ -358,13 +360,16 @@ export default function ChallengesPage() {
                       role="radio"
                       aria-checked={Number(draft.mapId) === map.id}
                     >
-                      {map.image_url ? (
-                        <img src={map.image_url} alt={map.name} />
-                      ) : (
-                        <div className="map-card-fallback">
-                          <Icon icon="mdi:map" width={34} aria-hidden="true" />
-                        </div>
-                      )}
+                      <AssetImage
+                        src={map.image_url}
+                        sources={[getMapImageUrl(map.name)]}
+                        alt={map.name}
+                        fallback={(
+                          <div className="map-card-fallback">
+                            <Icon icon="mdi:map" width={34} aria-hidden="true" />
+                          </div>
+                        )}
+                      />
                       <div className="map-choice-meta">
                         <span>{map.name}</span>
                         <GameBadge game={map.game} className="map-choice-game" />
@@ -394,7 +399,7 @@ export default function ChallengesPage() {
                           role="radio"
                           aria-checked={selected}
                         >
-                          <img src={game.icon} alt="" aria-hidden="true" />
+                          <AssetImage src={game.icon} alt="" ariaHidden="true" fallback={null} />
                           <span>{game.label}</span>
                         </button>
                       );

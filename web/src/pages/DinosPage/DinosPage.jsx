@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Icon } from "../../components/AppIcon/AppIcon.jsx";
+import AssetImage from "../../components/AssetImage/AssetImage.jsx";
 import AdminEditBanner from "../../components/AdminEditBanner/AdminEditBanner.jsx";
 import ConfirmDialog from "../../components/ConfirmDialog/ConfirmDialog.jsx";
 import DashboardWidgets from "../../components/DashboardWidgets/DashboardWidgets.jsx";
+import DinoImage from "../../components/DinoImage/DinoImage.jsx";
 import EmptyState from "../../components/EmptyState/EmptyState.jsx";
 import GameBadge from "../../components/GameBadge/GameBadge.jsx";
 import Layout from "../../components/Layout/Layout.jsx";
@@ -13,6 +15,7 @@ import { useModalAccessibility } from "../../hooks/useModalAccessibility";
 import { useStaleRequestGuard } from "../../hooks/useStaleRequestGuard";
 import { useI18n } from "../../i18n";
 import { dinoService } from "../../services/dinoService";
+import { getDinoImageUrl } from "../../utils/dinoIcons";
 import { shouldConfirmDangerousActions } from "../../utils/settings";
 import { getStoredPageFilters, savePageFilters } from "../../utils/pageFilters";
 import "./DinosPage.css";
@@ -293,31 +296,37 @@ export default function DinosPage() {
 
         {(!busy || dinos.length > 0) && filteredDinos.length > 0 ? (
           <div className="dinos-admin-grid">
-            {filteredDinos.map((dino) => (
-              <article className="card dino-admin-card" key={dino.id}>
-              {dino.image_url ? (
-                <img className="dino-admin-image" src={dino.image_url} alt={dino.name} />
-              ) : (
-                <div className="dino-admin-image dino-admin-fallback">
-                  <Icon icon="mdi:dinosaur" width={34} aria-hidden="true" />
-                </div>
-              )}
-              <div className="dino-admin-body">
-                <div className="h2">{dino.name}</div>
-                <div className="dino-admin-meta">
-                  <GameBadge game={dino.game} />
-                </div>
-              </div>
-              <div className={`dino-admin-actions ${editMode ? "" : "hidden"}`.trim()} aria-hidden={!editMode}>
-                <button className="btn ghost" onClick={() => edit(dino)} aria-label={t("dinosPage.editItem", { name: dino.name })} title={t("dinosPage.editItem", { name: dino.name })} tabIndex={editMode ? 0 : -1}>
-                  <Icon icon="mdi:pencil-outline" width={18} aria-hidden="true" />
-                </button>
-                <button className="btn danger" onClick={() => requestRemove(dino)} aria-label={t("dinosPage.deleteItem", { name: dino.name })} title={t("dinosPage.deleteItem", { name: dino.name })} tabIndex={editMode ? 0 : -1}>
-                  <Icon icon="mdi:trash-can-outline" width={18} aria-hidden="true" />
-                </button>
-              </div>
-              </article>
-            ))}
+            {filteredDinos.map((dino) => {
+              return (
+                <article className="card dino-admin-card" key={dino.id}>
+                  <DinoImage
+                    src={dino?.image_url}
+                    sources={[getDinoImageUrl(dino?.name)]}
+                    className="dino-admin-image"
+                    alt={dino.name}
+                    fallback={(
+                      <div className="dino-admin-image dino-admin-fallback">
+                        <Icon icon="mdi:dinosaur" width={34} aria-hidden="true" />
+                      </div>
+                    )}
+                  />
+                  <div className="dino-admin-body">
+                    <div className="h2">{dino.name}</div>
+                    <div className="dino-admin-meta">
+                      <GameBadge game={dino.game} />
+                    </div>
+                  </div>
+                  <div className={`dino-admin-actions ${editMode ? "" : "hidden"}`.trim()} aria-hidden={!editMode}>
+                    <button className="btn ghost" onClick={() => edit(dino)} aria-label={t("dinosPage.editItem", { name: dino.name })} title={t("dinosPage.editItem", { name: dino.name })} tabIndex={editMode ? 0 : -1}>
+                      <Icon icon="mdi:pencil-outline" width={18} aria-hidden="true" />
+                    </button>
+                    <button className="btn danger" onClick={() => requestRemove(dino)} aria-label={t("dinosPage.deleteItem", { name: dino.name })} title={t("dinosPage.deleteItem", { name: dino.name })} tabIndex={editMode ? 0 : -1}>
+                      <Icon icon="mdi:trash-can-outline" width={18} aria-hidden="true" />
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         ) : null}
       </div>
@@ -374,7 +383,7 @@ export default function DinosPage() {
                     role="radio"
                     aria-checked={form.game === game.value}
                   >
-                    <img src={game.icon_url} alt="" aria-hidden="true" />
+                    <AssetImage src={game.icon_url} alt="" ariaHidden="true" fallback={null} />
                     <span>{game.label}</span>
                   </button>
                 ))}

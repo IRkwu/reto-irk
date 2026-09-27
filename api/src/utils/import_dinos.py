@@ -1,6 +1,7 @@
 from pathlib import Path
 import csv
 import re
+import unicodedata
 
 from sqlalchemy.orm import Session
 
@@ -9,7 +10,6 @@ from src.models.dino_map import DinoMap
 from src.models.map import Map
 from src.models.spawn_zone import SpawnZone
 
-ASSET_IMAGE_EXTENSION = ".webp"
 MAP_GAME_VALUES = {"ark_survival_evolved", "ark_survival_ascended"}
 
 def _read_csv_rows(path: Path, required_columns: set[str]) -> list[dict[str, str]]:
@@ -35,14 +35,13 @@ def _name_key(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "", name.strip().lower())
 
 def _asset_file_stem(name: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "_", name.strip().lower()).strip("_")
+    normalized = unicodedata.normalize("NFD", name.strip().lower())
+    normalized = "".join(char for char in normalized if not unicodedata.combining(char))
+    return re.sub(r"[^a-z0-9]+", "_", normalized).strip("_")
 
-def _public_asset_url(asset_dir: str, name: str) -> str | None:
-    file_stem = _asset_file_stem(name)
-    if not file_stem:
-        return None
-
-    return f"/assets/{asset_dir}/{file_stem}{ASSET_IMAGE_EXTENSION}"
+def _public_asset_url(folder: str, name: str) -> str | None:
+    stem = _asset_file_stem(name)
+    return f"/assets/{folder}/{stem}.webp" if stem else None
 
 def _should_replace_dino_name(current_name: str, candidate_name: str) -> bool:
     current_key = _name_key(current_name)
@@ -78,7 +77,7 @@ def _get_or_create_map(
             map_item.is_active = True
             updated = True
 
-        if image_url and map_item.image_url != image_url:
+        if image_url and not (map_item.image_url or "").strip():
             map_item.image_url = image_url
             updated = True
 
@@ -122,7 +121,7 @@ def _get_or_create_dino(
             dino.is_active = True
             updated = True
 
-        if image_url and dino.image_url != image_url:
+        if image_url and not (dino.image_url or "").strip():
             dino.image_url = image_url
             updated = True
 
@@ -256,12 +255,11 @@ def import_ark_catalog(
             continue
 
         map_game = row["game"]
-        map_image_url = _public_asset_url("maps", map_name)
         map_item, map_created, map_updated = _get_or_create_map(
             db,
             map_name,
             game=map_game,
-            image_url=map_image_url,
+            image_url=_public_asset_url("maps", map_name),
         )
         maps_by_key[_name_key(map_name)] = map_item
         stats["created_maps"] += int(map_created)
@@ -273,12 +271,11 @@ def import_ark_catalog(
             continue
 
         dino_game = row["game"]
-        dino_image_url = _public_asset_url("dinos", dino_name)
         dino, created, updated = _get_or_create_dino(
             db,
             name=dino_name,
             game=dino_game,
-            image_url=dino_image_url,
+            image_url=_public_asset_url("dinos", dino_name),
         )
         dinos_by_key[_name_key(dino_name)] = dino
         stats["created_dinos"] += int(created)

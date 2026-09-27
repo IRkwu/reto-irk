@@ -1,24 +1,62 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "../AppIcon/AppIcon.jsx";
 import { getDinoIconUrl } from "../../utils/dinoIcons";
 import "./DinoIcon.css";
 
 export default function DinoIcon({ dino, imageClassName = "", iconClassName = "", fallbackImageUrl = "" }) {
-  const [failedSources, setFailedSources] = useState(0);
   const localIconUrl = getDinoIconUrl(dino?.name || dino?.label);
   const imageSources = useMemo(
-    () => [localIconUrl, dino?.image_url, dino?.icon_url].filter(Boolean).filter((url, index, sources) => sources.indexOf(url) === index),
-    [dino?.icon_url, dino?.image_url, localIconUrl]
+    () => [localIconUrl, dino?.image_url, dino?.icon_url, fallbackImageUrl]
+      .filter(Boolean)
+      .filter((url, index, sources) => sources.indexOf(url) === index),
+    [dino?.icon_url, dino?.image_url, fallbackImageUrl, localIconUrl]
   );
+  const sourceKey = JSON.stringify(imageSources);
+  const [failureState, setFailureState] = useState({ sourceKey: "", count: 0 });
+  const failedSources = failureState.sourceKey === sourceKey ? failureState.count : 0;
+  const imageUrl = imageSources[failedSources];
+  const isMaskImage = Boolean(imageUrl && (imageUrl === localIconUrl || imageUrl === fallbackImageUrl));
+  const currentSourceRef = useRef({ sourceKey, imageUrl });
+
+  useLayoutEffect(() => {
+    currentSourceRef.current = { sourceKey, imageUrl };
+  }, [imageUrl, sourceKey]);
+
+  const advanceFailedSources = useCallback((failedSourceKey, failedUrl) => {
+    const currentSource = currentSourceRef.current;
+    if (currentSource.sourceKey !== failedSourceKey || currentSource.imageUrl !== failedUrl) {
+      return;
+    }
+
+    setFailureState((current) => ({
+      sourceKey: failedSourceKey,
+      count: (current.sourceKey === failedSourceKey ? current.count : 0) + 1,
+    }));
+  }, []);
 
   useEffect(() => {
-    setFailedSources(0);
-  }, [dino?.id, dino?.label, dino?.name, dino?.image_url, dino?.icon_url]);
+    if (!isMaskImage || !imageUrl) {
+      return undefined;
+    }
 
-  const imageUrl = imageSources[failedSources];
-  const isLocalIcon = Boolean(imageUrl && localIconUrl && imageUrl === localIconUrl);
+    let active = true;
+    const probe = new Image();
+    probe.onerror = () => {
+      if (active) {
+        advanceFailedSources(sourceKey, imageUrl);
+      }
+    };
+    probe.src = imageUrl;
 
-  if (isLocalIcon) {
+    return () => {
+      active = false;
+      probe.onload = null;
+      probe.onerror = null;
+      probe.removeAttribute("src");
+    };
+  }, [advanceFailedSources, imageUrl, isMaskImage, sourceKey]);
+
+  if (isMaskImage) {
     return (
       <span
         className={`${imageClassName} dino-local-icon ${iconClassName}`.trim()}
@@ -34,17 +72,7 @@ export default function DinoIcon({ dino, imageClassName = "", iconClassName = ""
         className={imageClassName}
         src={imageUrl}
         alt=""
-        onError={() => setFailedSources((current) => current + 1)}
-      />
-    );
-  }
-
-  if (fallbackImageUrl) {
-    return (
-      <span
-        className={`${imageClassName} dino-local-icon ${iconClassName}`.trim()}
-        style={{ "--dino-icon-url": `url("${fallbackImageUrl}")` }}
-        aria-hidden="true"
+        onError={() => advanceFailedSources(sourceKey, imageUrl)}
       />
     );
   }

@@ -14,8 +14,10 @@ import { useStaleRequestGuard } from "../../hooks/useStaleRequestGuard";
 import { useI18n } from "../../i18n";
 import { dinoService } from "../../services/dinoService";
 import { mapService, spawnZoneService } from "../../services/mapService";
+import AssetImage from "../../components/AssetImage/AssetImage.jsx";
 import { shouldConfirmDangerousActions } from "../../utils/settings";
 import { getStoredPageFilters, savePageFilters } from "../../utils/pageFilters";
+import { getMapImageUrl } from "../../utils/mapImages";
 import MapDinosPanel from "./MapDinosPanel.jsx";
 import MapFormModal from "./MapFormModal.jsx";
 import SpawnZonesPanel from "./SpawnZonesPanel.jsx";
@@ -486,13 +488,16 @@ export default function MapsPage() {
                   role="radio"
                   aria-checked={Number(selectedMapId) === map.id}
                 >
-                  {map.image_url ? (
-                    <img src={map.image_url} alt={map.name} />
-                  ) : (
-                    <span className="map-admin-fallback">
-                      <Icon icon="mdi:map" width={34} aria-hidden="true" />
-                    </span>
-                  )}
+                  <AssetImage
+                    src={map.image_url}
+                    sources={[getMapImageUrl(map.name)]}
+                    alt={map.name}
+                    fallback={(
+                      <span className="map-admin-fallback">
+                        <Icon icon="mdi:map" width={34} aria-hidden="true" />
+                      </span>
+                    )}
+                  />
                   <span className="map-admin-name">{map.name}</span>
                   <GameBadge game={map.game} className="map-admin-game" />
                 </button>
