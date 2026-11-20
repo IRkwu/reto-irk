@@ -190,48 +190,34 @@ html:not([data-density="compact"]) .editor-player-card .challenge-dino-card-grid
 
 @media (max-width: 720px) {
   .editor-config-card .section-head {
-    position: relative;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     align-items: stretch;
   }
   .editor-config-card .section-head > :first-child {
     min-width: 0;
-    padding-right: 200px;
   }
   .editor-config-card .section-head > .row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 42px;
-    width: 100%;
-    min-height: 42px;
-    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
   }
-  .editor-config-card .section-head > .row > * {
-    width: 100%;
-    min-width: 0;
-  }
-  .editor-config-card .section-head > .row > :first-child {
-    position: absolute;
-    top: 2px;
-    right: 0;
-    width: auto;
-    max-width: none;
+  .editor-config-badges {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
   }
   .editor-config-card .section-head > .row .btn {
     padding-inline: 8px;
   }
   .editor-start-button {
-    grid-column: 1;
+    flex: 0 1 auto;
+    max-width: 100%;
   }
   .editor-config-card .editor-cancel-button {
-    grid-column: 2;
-    width: 42px;
-    min-width: 42px;
-    height: 42px;
     min-height: 42px;
-    max-height: 42px;
     flex: 0 0 42px;
+    margin-inline-start: auto;
   }
   .editor-summary-form {
     grid-template-columns: 1fr;
@@ -249,22 +235,5 @@ html:not([data-density="compact"]) .editor-player-card .challenge-dino-card-grid
   }
   .editor-player-head {
     grid-template-columns: 1fr;
-  }
-  .editor-config-card .section-head > :first-child {
-    padding-right: 0;
-  }
-  .editor-config-card .section-head > .row > :first-child {
-    position: static;
-    grid-column: 1 / -1;
-    justify-self: end;
-    width: auto;
-    max-width: none;
-  }
-  .editor-config-card .section-head > .row {
-    margin-top: 12px;
-  }
-  .editor-cancel-button {
-    width: 42px;
-    min-width: 42px;
   }
 }
