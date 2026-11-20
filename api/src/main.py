@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
     init_db()
     yield
 
-app = FastAPI(title="ARK Challenge API", version="0.1.0", debug=True, lifespan=lifespan)
+app = FastAPI(title="ARK Challenge API", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

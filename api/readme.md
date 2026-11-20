@@ -22,8 +22,8 @@ Desde la raíz del repositorio:
 
 ```powershell
 cd api
-python -m venv env
-.\env\Scripts\Activate.ps1
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
@@ -44,7 +44,7 @@ También puedes ajustar `ALGORITHM` y `ACCESS_TOKEN_EXPIRE_MINUTES`.
 
 ```powershell
 cd api
-.\env\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 uvicorn src.main:app --reload
 ```
 
@@ -60,7 +60,7 @@ relaciones mapa-dino y zonas de spawn:
 
 ```powershell
 cd api
-.\env\Scripts\python.exe -m scripts.import_ark_catalog
+.\.venv\Scripts\python.exe -m scripts.import_ark_catalog
 ```
 
 Puedes indicar otra carpeta de datos con `--data-dir`.
@@ -96,7 +96,6 @@ api/
 │   ├── repositories/  # acceso a datos
 │   ├── routers/       # endpoints HTTP y WebSocket
 │   └── schemas/       # esquemas Pydantic
-├── alembic/           # configuración y versiones de base de datos
 ├── import_data/       # CSV del catálogo ARK
 └── scripts/           # utilidades de importación
 ```

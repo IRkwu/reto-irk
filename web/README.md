@@ -88,8 +88,34 @@ web/src/
 └── utils/        # settings, filtros, temas y assets
 ```
 
-Los iconos de juegos y dinos están en `public/assets/`. Las imágenes públicas
-se sirven desde la raíz, por ejemplo `/assets/dinos_icons/raptor.webp`.
+## Imágenes
+
+El repositorio no incluye imágenes. Para usar archivos locales, crea la
+carpeta `web/public/` (Vite la sirve desde la raíz) con esta estructura:
+
+```text
+web/public/
+├── favicon.svg
+└── assets/
+    ├── dinos/          # imagen de cada dino: <slug>.webp
+    ├── dinos_icons/    # ícono pequeño de cada dino: <slug>.webp
+    ├── maps/           # imagen de cada mapa: <slug>.webp
+    └── icons/
+        ├── evolved.webp           # logo de ARK: Survival Evolved
+        ├── ascended.webp          # logo de ARK: Survival Ascended
+        ├── dino_picker_icon.webp  # ícono por defecto del selector de dinos
+        └── map_edit_icon.svg      # ícono del botón para editar un mapa
+```
+
+El `<slug>` es el nombre del dino o del mapa en minúsculas, sin tildes y con
+`_` en lugar de espacios o símbolos. Por ejemplo, `Rex` → `rex.webp` y
+`The Island` → `the_island.webp`. Los archivos se sirven desde la raíz, por
+ejemplo `/assets/dinos_icons/rex.webp`.
+
+Al importar el catálogo, la API guarda como imagen de cada dino y mapa las
+rutas de `dinos/` y `maps/`; los archivos de `dinos_icons/` e `icons/` los usa
+directamente el frontend. También puedes indicar una URL de imagen para cada
+dino, mapa o jugador desde el panel de administración.
 
 ## Autenticación e integración
 
